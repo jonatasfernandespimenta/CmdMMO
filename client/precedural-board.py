@@ -116,7 +116,6 @@ class ProceduralBoard:
     self.board[currentCell[0]][currentCell[1]] = character
 
   def polishBoard(self):
-    # replace X by . and O by #
     for i in range(self.boardHeight):
       for j in range(self.boardWidth):
         if self.board[i][j] == 'X':
