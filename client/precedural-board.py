@@ -8,6 +8,7 @@ class ProceduralBoard:
     self.boardHeight = 4
     self.finished = False
     self.path = []
+    self.isBacktracking = False
 
   def getBoard(self):
     for i in range(self.boardHeight):
@@ -20,24 +21,54 @@ class ProceduralBoard:
     self.board[currentCell[0]][currentCell[1]] = 'X'
 
     while not self.finished:
-      blockedDirections = self.getBlockedDirections(currentCell)
-      self.move(currentCell, blockedDirections)
-      print(self.getBoard())
-      time.sleep(1)
+      if self.isBacktracking:
+        print('backtracking')
 
-  def getBlockedDirections(self, currentCell):
+        self.path.pop()
+        currentCell = self.path[len(self.path) - 1]
+        blockedDirections = self.getBlockedDirections(currentCell, 'O')
+
+        if len(blockedDirections) == 4:
+          self.isBacktracking = False
+
+        self.move(currentCell, blockedDirections, 'O')
+        print(self.getBoard())
+        time.sleep(0.2)
+
+      else:
+        blockedDirections = self.getBlockedDirections(currentCell)
+
+        if len(blockedDirections) == 4:
+          self.isBacktracking = True
+
+        self.move(currentCell, blockedDirections)
+        print(self.getBoard())
+        time.sleep(0.2)
+
+      if self.checkIfThereAreNoMoreDotsInTheBoard():
+        self.finished = True
+
+
+  def checkIfThereAreNoMoreDotsInTheBoard(self):
+    for i in range(self.boardHeight):
+      for j in range(self.boardWidth):
+        if self.board[i][j] == '.':
+          return False
+    return True
+
+  def getBlockedDirections(self, currentCell, character='X'):
     blockedDirections = []
     
-    if self.board[currentCell[0] + 1][currentCell[1]] == 'X':
+    if self.board[currentCell[0] + 1][currentCell[1]] == character:
       blockedDirections.append(0)
     
-    if self.board[currentCell[0] - 1][currentCell[1]] == 'X':
+    if self.board[currentCell[0] - 1][currentCell[1]] == character:
       blockedDirections.append(1)
     
-    if self.board[currentCell[0]][currentCell[1] + 1] == 'X':
+    if self.board[currentCell[0]][currentCell[1] + 1] == character:
       blockedDirections.append(2)
     
-    if self.board[currentCell[0]][currentCell[1] - 1] == 'X':
+    if self.board[currentCell[0]][currentCell[1] - 1] == character:
       blockedDirections.append(3)
 
     if currentCell[0] + 1 >= self.boardHeight:
@@ -54,27 +85,29 @@ class ProceduralBoard:
     
     return blockedDirections
 
-  
-  def move(self, currentCell, blockedDirections):
-    randomDirection = random.randint(0, 3)
-    while randomDirection in blockedDirections:
+  def move(self, currentCell, blockedDirections, character='X'):
+    if len(blockedDirections) < 4:
       randomDirection = random.randint(0, 3)
+      while randomDirection in blockedDirections:
+        randomDirection = random.randint(0, 3)
 
-    if randomDirection == 0:
-      self.board[currentCell[0] + 1][currentCell[1]] = 'X'
-      currentCell[0] += 1
+      if randomDirection == 0:
+        self.board[currentCell[0] + 1][currentCell[1]] = character
+        currentCell[0] += 1
 
-    if randomDirection == 1:
-      self.board[currentCell[0] - 1][currentCell[1]] = 'X'
-      currentCell[0] -= 1
+      if randomDirection == 1:
+        self.board[currentCell[0] - 1][currentCell[1]] = character
+        currentCell[0] -= 1
 
-    if randomDirection == 2:
-      self.board[currentCell[0]][currentCell[1] + 1] = 'X'
-      currentCell[1] += 1
+      if randomDirection == 2:
+        self.board[currentCell[0]][currentCell[1] + 1] = character
+        currentCell[1] += 1
 
-    if randomDirection == 3:
-      self.board[currentCell[0]][currentCell[1] - 1] = 'X'
-      currentCell[1] -= 1
+      if randomDirection == 3:
+        self.board[currentCell[0]][currentCell[1] - 1] = character
+        currentCell[1] -= 1
+
+    self.path.append([currentCell[0], currentCell[1]])
 
 
 board = [['.' for i in range(30)] for j in range(15)]
