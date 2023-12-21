@@ -20,33 +20,35 @@ class Player:
 
     if keyboard.is_pressed('up'):
       self.lines[self.playerPosition[0]][self.playerPosition[1]] = '.'
-      if self.playerWillBeOutOfBounds([self.playerPosition[0]-1, self.playerPosition[1]]) == False:
+      if self.pathIsBlocked([self.playerPosition[0]-1, self.playerPosition[1]]) == False:
         newPlayerPosition[0] -= 1
 
     elif keyboard.is_pressed('down'):
       self.lines[self.playerPosition[0]][self.playerPosition[1]] = '.'
-      if self.playerWillBeOutOfBounds([self.playerPosition[0]+1, self.playerPosition[1]]) == False:
+      if self.pathIsBlocked([self.playerPosition[0]+1, self.playerPosition[1]]) == False:
         newPlayerPosition[0] += 1
 
     elif keyboard.is_pressed('left'):
       self.lines[self.playerPosition[0]][self.playerPosition[1]] = '.'
-      if self.playerWillBeOutOfBounds([self.playerPosition[0], self.playerPosition[1]-1]) == False:
+      if self.pathIsBlocked([self.playerPosition[0], self.playerPosition[1]-1]) == False:
         newPlayerPosition[1] -= 1
 
     elif keyboard.is_pressed('right'):
       self.lines[self.playerPosition[0]][self.playerPosition[1]] = '.'
-      if self.playerWillBeOutOfBounds([self.playerPosition[0], self.playerPosition[1]+1]) == False:
+      if self.pathIsBlocked([self.playerPosition[0], self.playerPosition[1]+1]) == False:
         newPlayerPosition[1] += 1
     
     sio.emit('move', json.dumps({"playerId": self.name, "playerPosition": newPlayerPosition}))
     sio.sleep(0.1)
     self.playerPosition = newPlayerPosition
 
-  def playerWillBeOutOfBounds(self, playerPosition):
+  def pathIsBlocked(self, playerPosition):
     if playerPosition[0] < 0 or playerPosition[0] > self.windowHeight-1 or playerPosition[1] < 0 or playerPosition[1] > self.windowWidth-1:
       return True
-    else:
-      return False
+    elif self.lines[playerPosition[0]][playerPosition[1]] == '#':
+      return True
+    
+    return False
   
   def getName(self):
     return self.name

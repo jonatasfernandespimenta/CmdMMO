@@ -54,7 +54,7 @@ class Board:
   
   def createRandomEnemies(self, amount):
     for i in range(amount):
-      self.enemies.append(Enemy(10, 5, 2, 'Snake', [random.randint(0, self.windowHeight-1), random.randint(0, self.windowWidth-1)]))
+      self.enemies.append(Enemy(10, 5, 2, 'Snake', [random.randint(0, self.windowHeight-1), random.randint(0, self.windowWidth-1)], self.lines))
 
   def init(self, players):
     self.createBoard()

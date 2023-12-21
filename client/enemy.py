@@ -2,7 +2,7 @@ import time
 import random
 
 class Enemy:
-  def __init__(self, hp, attack, defense, name, position):
+  def __init__(self, hp, attack, defense, name, position, lines):
     self.enemyPosition = position
     self.hp = hp
     self.attack = attack
@@ -10,6 +10,7 @@ class Enemy:
     self.name = name
     self.id = random.randint(0, 1000000)
     self.isInCombat = False
+    self.lines = lines
 
   def moveEnemy(self, boardWidth, boardHeight, lines):
     if self.isInCombat == False:
@@ -17,25 +18,25 @@ class Enemy:
       direction = random.randint(0, 3)
 
       if direction == 0:
-        if self.enemyWillBeOutOfBounds([self.enemyPosition[0]-1, self.enemyPosition[1]], boardWidth, boardHeight) == False:
+        if self.pathIsBlocked([self.enemyPosition[0]-1, self.enemyPosition[1]], boardWidth, boardHeight) == False:
           newEnemyPosition[0] -= 1
           self.removeEnemy(lines)
           self.enemyPosition = newEnemyPosition
           self.drawEnemy(lines)
       elif direction == 1:
-        if self.enemyWillBeOutOfBounds([self.enemyPosition[0]+1, self.enemyPosition[1]], boardWidth, boardHeight) == False:
+        if self.pathIsBlocked([self.enemyPosition[0]+1, self.enemyPosition[1]], boardWidth, boardHeight) == False:
           newEnemyPosition[0] += 1
           self.removeEnemy(lines)
           self.enemyPosition = newEnemyPosition
           self.drawEnemy(lines)
       elif direction == 2:
-        if self.enemyWillBeOutOfBounds([self.enemyPosition[0], self.enemyPosition[1]-1], boardWidth, boardHeight) == False:
+        if self.pathIsBlocked([self.enemyPosition[0], self.enemyPosition[1]-1], boardWidth, boardHeight) == False:
           newEnemyPosition[1] -= 1
           self.removeEnemy(lines)
           self.enemyPosition = newEnemyPosition
           self.drawEnemy(lines)
       elif direction == 3:
-        if self.enemyWillBeOutOfBounds([self.enemyPosition[0], self.enemyPosition[1]+1], boardWidth, boardHeight) == False:
+        if self.pathIsBlocked([self.enemyPosition[0], self.enemyPosition[1]+1], boardWidth, boardHeight) == False:
           newEnemyPosition[1] += 1
           self.removeEnemy(lines)
           self.enemyPosition = newEnemyPosition
@@ -48,11 +49,14 @@ class Enemy:
   def setIsInCombat(self, isInCombat):
     self.isInCombat = isInCombat
 
-  def enemyWillBeOutOfBounds(self, enemyPosition, boardWidth, boardHeight):
+  def pathIsBlocked(self, enemyPosition, boardWidth, boardHeight):
     if enemyPosition[0] < 0 or enemyPosition[0] > boardHeight-1 or enemyPosition[1] < 0 or enemyPosition[1] > boardWidth-1:
       return True
-    else:
-      return False
+    
+    if self.lines[enemyPosition[0]][enemyPosition[1]] == '#':
+      return True
+
+    return False
 
   def getEnemyPosition(self):
     return self.enemyPosition
