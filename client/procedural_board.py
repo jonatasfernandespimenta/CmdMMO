@@ -11,10 +11,7 @@ class ProceduralBoard:
     self.isBacktracking = False
 
   def getBoard(self):
-    for i in range(self.boardHeight):
-      for j in range(self.boardWidth):
-        print(self.board[i][j], end='')
-      print()
+    return self.board
 
   def procedurelyGeneratedBoard(self):
     currentCell = [random.randint(0, self.boardHeight-1), random.randint(0, self.boardWidth-1)]
@@ -28,7 +25,6 @@ class ProceduralBoard:
         self.moveToSpecificCell(currentCell, 'O')
 
         unvisitedCell = self.foundUnvisitedCell(currentCell)
-        print(unvisitedCell)
 
         if len(unvisitedCell) > 0:
           currentCell = unvisitedCell
@@ -146,10 +142,3 @@ class ProceduralBoard:
         currentCell[1] -= 1
 
     self.path.append([currentCell[0], currentCell[1]])
-
-
-board = [['.' for i in range(31)] for j in range(16)]
-proceduralBoard = ProceduralBoard(board, 30, 15)
-
-proceduralBoard.procedurelyGeneratedBoard()
-proceduralBoard.getBoard()

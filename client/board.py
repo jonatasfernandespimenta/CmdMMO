@@ -1,5 +1,6 @@
 import random
 from enemy import Enemy
+from procedural_board import ProceduralBoard
 
 class Board:
   def __init__(self, enemies):
@@ -9,10 +10,18 @@ class Board:
     self.enemies = enemies
 
   def createBoard(self):
+    board = [['.' for i in range(self.windowWidth + 1)] for j in range(self.windowHeight + 1)]
+
+    proceduralBoard = ProceduralBoard(board, self.windowWidth, self.windowHeight)
+    proceduralBoard.procedurelyGeneratedBoard()
+
+    generatedBoard = proceduralBoard.getBoard()
+
     for i in range(self.windowHeight):
       self.lines.append([])
       for j in range(self.windowWidth):
-        self.lines[i].append('.')
+        self.lines[i].append(generatedBoard[i][j])
+
     return self.lines
   
   def printEnemies(self):
