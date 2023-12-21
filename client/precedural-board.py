@@ -2,10 +2,10 @@ import time
 import random
 
 class ProceduralBoard:
-  def __init__(self, board):
+  def __init__(self, board, boardWidth, boardHeight):
     self.board = board
-    self.boardWidth = 8
-    self.boardHeight = 4
+    self.boardWidth = boardWidth
+    self.boardHeight = boardHeight
     self.finished = False
     self.path = []
     self.isBacktracking = False
@@ -21,33 +21,38 @@ class ProceduralBoard:
     self.board[currentCell[0]][currentCell[1]] = 'X'
 
     while not self.finished:
-      if self.isBacktracking:
-        print('backtracking')
-
-        self.path.pop()
+      while self.isBacktracking:
         currentCell = self.path[len(self.path) - 1]
-        blockedDirections = self.getBlockedDirections(currentCell, 'O')
+        self.path.pop()
 
-        if len(blockedDirections) == 4:
+        self.moveToSpecificCell(currentCell, 'O')
+
+        unvisitedCell = self.foundUnvisitedCell(currentCell)
+        print(unvisitedCell)
+
+        if len(unvisitedCell) > 0:
+          currentCell = unvisitedCell
+          self.moveToSpecificCell(currentCell)
           self.isBacktracking = False
 
-        self.move(currentCell, blockedDirections, 'O')
-        print(self.getBoard())
-        time.sleep(0.2)
+        # print(self.getBoard())
+        # time.sleep(0.5)
 
-      else:
-        blockedDirections = self.getBlockedDirections(currentCell)
+      
+      blockedDirections = self.getBlockedDirections(currentCell)
 
-        if len(blockedDirections) == 4:
-          self.isBacktracking = True
+      if len(blockedDirections) == 4:
+        self.isBacktracking = True
 
-        self.move(currentCell, blockedDirections)
-        print(self.getBoard())
-        time.sleep(0.2)
+      self.move(currentCell, blockedDirections)
+      # print(self.getBoard())
+      # time.sleep(0.2)
 
       if self.checkIfThereAreNoMoreDotsInTheBoard():
         self.finished = True
-
+    if self.finished:
+      self.polishBoard()
+      self.getBoard()
 
   def checkIfThereAreNoMoreDotsInTheBoard(self):
     for i in range(self.boardHeight):
@@ -59,16 +64,16 @@ class ProceduralBoard:
   def getBlockedDirections(self, currentCell, character='X'):
     blockedDirections = []
     
-    if self.board[currentCell[0] + 1][currentCell[1]] == character:
+    if self.board[currentCell[0] + 1][currentCell[1]] == character or self.board[currentCell[0] + 1][currentCell[1]] == 'O':
       blockedDirections.append(0)
     
-    if self.board[currentCell[0] - 1][currentCell[1]] == character:
+    if self.board[currentCell[0] - 1][currentCell[1]] == character or self.board[currentCell[0] - 1][currentCell[1]] == 'O':
       blockedDirections.append(1)
     
-    if self.board[currentCell[0]][currentCell[1] + 1] == character:
+    if self.board[currentCell[0]][currentCell[1] + 1] == character or self.board[currentCell[0]][currentCell[1] + 1] == 'O':
       blockedDirections.append(2)
     
-    if self.board[currentCell[0]][currentCell[1] - 1] == character:
+    if self.board[currentCell[0]][currentCell[1] - 1] == character or self.board[currentCell[0]][currentCell[1] - 1] == 'O':
       blockedDirections.append(3)
 
     if currentCell[0] + 1 >= self.boardHeight:
@@ -84,6 +89,40 @@ class ProceduralBoard:
       blockedDirections.append(3)
     
     return blockedDirections
+
+  def foundUnvisitedCell(self, currentCell):
+    unvisitedCell = []
+
+    if currentCell[0] + 1 < self.boardHeight:
+      if self.board[currentCell[0] + 1][currentCell[1]] == '.':
+        unvisitedCell = [currentCell[0] + 1, currentCell[1]]
+
+    if currentCell[0] - 1 >= 0:
+      if self.board[currentCell[0] - 1][currentCell[1]] == '.':
+        unvisitedCell = [currentCell[0] - 1, currentCell[1]]
+
+    if currentCell[1] + 1 < self.boardWidth:
+      if self.board[currentCell[0]][currentCell[1] + 1] == '.':
+        unvisitedCell = [currentCell[0], currentCell[1] + 1]
+
+    if currentCell[1] - 1 >= 0:
+      if self.board[currentCell[0]][currentCell[1] - 1] == '.':
+        unvisitedCell = [currentCell[0], currentCell[1] - 1]
+
+
+    return unvisitedCell
+
+  def moveToSpecificCell(self, currentCell, character='X'):
+    self.board[currentCell[0]][currentCell[1]] = character
+
+  def polishBoard(self):
+    # replace X by . and O by #
+    for i in range(self.boardHeight):
+      for j in range(self.boardWidth):
+        if self.board[i][j] == 'X':
+          self.board[i][j] = '#'
+        if self.board[i][j] == 'O':
+          self.board[i][j] = '.'
 
   def move(self, currentCell, blockedDirections, character='X'):
     if len(blockedDirections) < 4:
@@ -110,8 +149,8 @@ class ProceduralBoard:
     self.path.append([currentCell[0], currentCell[1]])
 
 
-board = [['.' for i in range(30)] for j in range(15)]
-proceduralBoard = ProceduralBoard(board)
+board = [['.' for i in range(31)] for j in range(16)]
+proceduralBoard = ProceduralBoard(board, 30, 15)
 
 proceduralBoard.procedurelyGeneratedBoard()
 proceduralBoard.getBoard()
