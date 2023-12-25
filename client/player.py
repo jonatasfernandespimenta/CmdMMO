@@ -11,6 +11,7 @@ class Player:
     self.attack = 10
     self.defense = 6
     self.name = name
+    self.inventory = []
 
   def removePlayer(self):
     self.lines[self.playerPosition[0]][self.playerPosition[1]] = '.'
@@ -70,6 +71,11 @@ class Player:
   
   def setHp(self, hp):
     self.hp = hp
+
+  def interactWithChest(self, chest):
+    if chest.getChestPosition() == self.playerPosition:
+      loot = chest.openChest(self.lines)
+      self.inventory.append(loot)
 
   def setPlayerPosition(self, playerPosition):
     self.playerPosition = playerPosition
