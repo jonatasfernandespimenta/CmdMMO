@@ -100,6 +100,9 @@ class Player:
       print("You killed the enemy!")
       enemy.removeEnemy(self.lines)
 
+  def getInventory(self):
+    return self.inventory
+
   def init(self, sio):
     self.movePlayer(sio)
 
