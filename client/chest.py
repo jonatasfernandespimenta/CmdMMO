@@ -10,7 +10,10 @@ class Chest:
     self.loot = potions[random.randint(0, len(potions)-1)] if random.randint(0, 1) == 0 else swords[random.randint(0, len(swords)-1)]
 
   def drawChest(self):
-    print('▣')
+    if self.open == False:
+      self.lines[self.position[0]][self.position[1]] = '▣'
+    else:
+      self.lines[self.position[0]][self.position[1]] = '□'
 
   def getPosition(self):
     return self.position

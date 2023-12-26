@@ -73,8 +73,8 @@ class Player:
     self.hp = hp
 
   def interactWithChest(self, chest):
-    if chest.getChestPosition() == self.playerPosition:
-      loot = chest.openChest(self.lines)
+    if chest.getPosition() == self.playerPosition and chest.open == False:
+      loot = chest.openChest()
       self.inventory.append(loot)
 
   def setPlayerPosition(self, playerPosition):

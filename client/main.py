@@ -10,10 +10,11 @@ import socketio
 
 players = []
 enemies = []
+chests = []
 
 sio = socketio.Client()
 
-board = Board(enemies)
+board = Board(enemies, chests)
 boardInfo = [board.getLines(), board.getWindowWidth(), board.getWindowHeight()]
 
 server = Server(sio, 'localhost', 3001, players, boardInfo)
@@ -29,6 +30,7 @@ def main():
   player = Player(boardInfo[0], boardInfo[1], boardInfo[2], [0, 0], playerName)
 
   board.createRandomEnemies(5)
+  board.createRandomChests(5)
 
   combatUI = CombatUI(player, enemies, draw)
 
