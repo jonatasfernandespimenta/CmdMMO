@@ -8,6 +8,7 @@ class Chest:
     self.lines = lines
     self.open = False
     self.loot = potions[random.randint(0, len(potions)-1)] if random.randint(0, 1) == 0 else swords[random.randint(0, len(swords)-1)]
+    #self.loot = potions[0]
 
   def drawChest(self):
     if self.open == False:

@@ -12,6 +12,7 @@ class Player:
     self.defense = 6
     self.name = name
     self.inventory = []
+    self.isInventoryOpen = False
 
   def removePlayer(self):
     self.lines[self.playerPosition[0]][self.playerPosition[1]] = '.'
@@ -101,8 +102,37 @@ class Player:
       enemy.removeEnemy(self.lines)
 
   def getInventory(self):
-    return self.inventory
+    inventory = self.inventory.copy()
+
+    for item in inventory:
+      item['quantity'] = self.inventory.count(item)
+
+    inventory = list({v['name']:v for v in inventory}.values())
+
+    return inventory
+  
+  def getIsInventoryOpen(self):
+    return self.isInventoryOpen
+  
+  def setIsInventoryOpen(self, isInventoryOpen):
+    self.isInventoryOpen = isInventoryOpen
+
+  def inventoryControl(self):
+    if keyboard.is_pressed(34):
+      if self.isInventoryOpen == False:
+        self.isInventoryOpen = True
+
+  def dropItem(self, itemIndex):
+    self.inventory.remove(self.inventory[int(itemIndex)])
+
+  def equipItem(self, itemIndex):
+    item = self.inventory[int(itemIndex)]
+
+    if 'hp' in item:
+      self.hp += item['hp']
+    elif 'attack' in item:
+      self.attack += item['attack']
 
   def init(self, sio):
     self.movePlayer(sio)
-
+    self.inventoryControl()

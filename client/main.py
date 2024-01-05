@@ -4,6 +4,7 @@ from player import Player
 from board import Board
 from enemy import Enemy
 from ui.combatui import CombatUI
+from ui.inventoryui import InventoryUi
 from server import Server
 import socketio
 
@@ -33,6 +34,7 @@ def main():
   board.createRandomChests(5)
 
   combatUI = CombatUI(player, enemies, draw)
+  inventoryUI = InventoryUi(player)
 
   if player not in players:
     players.append(player)
@@ -41,7 +43,10 @@ def main():
   server.join(player.getName(), player.getPlayerPosition())
 
   while True:
-    draw()
+    if player.getIsInventoryOpen():
+      inventoryUI.draw()
+    else:
+      draw()
     player.init(sio)
 
     if player.collidedWithEnemy(enemies):
