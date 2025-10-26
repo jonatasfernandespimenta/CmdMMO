@@ -18,7 +18,10 @@ class CityToDungeonTransition(MapTransition):
     dungeon.portalActive = False
     dungeon.portalPosition = None
     
-    # Setup dungeon
+    # Regenerate the board first
+    dungeon.createBoard()
+    
+    # Setup dungeon with new enemies and chests (they'll use the new board)
     dungeon.createRandomEnemies(5)
     dungeon.createRandomChests(5)
     dungeonInfo = [dungeon.getLines(), dungeon.getWindowWidth(), dungeon.getWindowHeight()]

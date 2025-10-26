@@ -1,5 +1,12 @@
 import time
 from typing import TYPE_CHECKING, List
+from typing import TypedDict
+
+class Item(TypedDict, total=False):
+  name: str
+  price: int
+  category: str
+  art: str
 
 if TYPE_CHECKING:
   from blessed import Terminal
@@ -196,7 +203,7 @@ class Player:
     
     return inventory
   
-  def addToInventory(self, item: dict):
+  def addToInventory(self, item: Item):
     """Add item to inventory"""
     self.inventory.append(item)
     self.showNotification(f"Collected: {item['name']}!")

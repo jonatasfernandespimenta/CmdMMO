@@ -24,10 +24,15 @@ class Dungeon(Map):
 
     generatedBoard = proceduralBoard.getBoard()
 
+    # Clear existing board before regenerating
+    self.lines = []
     for i in range(self.windowHeight):
       self.lines.append([])
       for j in range(self.windowWidth):
         self.lines[i].append(generatedBoard[i][j])
+    
+    # Ensure exit portal position is always walkable
+    self.lines[self.exitPortalPosition[0]][self.exitPortalPosition[1]] = '.'
 
     return self.lines
   
@@ -169,7 +174,10 @@ class Dungeon(Map):
       self.chests.append(Chest([random.randint(0, self.windowHeight-1), random.randint(0, self.windowWidth-1)], self.lines))
 
   def init(self, players, term):
-    self.createBoard()
+    # Only create board if it doesn't exist yet
+    if len(self.lines) == 0:
+      self.createBoard()
+    
     self.printEnemies()
     self.printChests()
 

@@ -56,8 +56,9 @@ class InventoryUi:
         break
     
     try:
-      itemDropped = self.player.getInventory()[int(playerChoice)]
-      self.player.dropItem(playerChoice)
+      itemIndex = int(playerChoice)
+      itemDropped = self.player.getInventory()[itemIndex]
+      self.player.dropItem(itemIndex)
       print(self.term.green("You dropped " + itemDropped['name']))
     except:
       print(self.term.red("Invalid item!"))
@@ -81,10 +82,11 @@ class InventoryUi:
         time.sleep(1)
         return
       
-      itemName = inventory[int(playerChoice)]['name']
-      self.player.equipItem(playerChoice)
+      itemIndex = int(playerChoice)
+      itemName = inventory[itemIndex]['name']
+      self.player.equipItem(itemIndex)
       print(self.term.green("You equipped " + itemName))
-      self.player.dropItem(playerChoice)
+      self.player.dropItem(itemIndex)
     except:
       print(self.term.red("Invalid item!"))
     

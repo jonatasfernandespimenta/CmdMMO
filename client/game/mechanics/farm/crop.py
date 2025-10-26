@@ -6,8 +6,3 @@ class Crop:
     self.name = name
     self.growth_time = growth_time
     self.planted_time = None
-
-class Farm:
-  def __init__(self, player):
-    self.player = player
-    self.crops = []
