@@ -1,52 +1,86 @@
 import json
-import keyboard
 import random
+import time
 
 class Player:
-  def __init__(self, lines, windowWidth, windowHeight, playerPosition, name):
+  CLASSES = {
+    'rogue': {
+      'hp': 80,
+      'attack': 15,
+      'defense': 4,
+      'luck': 8
+    },
+    'knight': {
+      'hp': 120,
+      'attack': 12,
+      'defense': 10,
+      'luck': 3
+    },
+    'wizard': {
+      'hp': 70,
+      'attack': 18,
+      'defense': 3,
+      'luck': 5
+    }
+  }
+
+  def __init__(self, lines, windowWidth, windowHeight, playerPosition, name, playerClass, term):
     self.lines = lines
     self.windowWidth = windowWidth
     self.windowHeight = windowHeight
     self.playerPosition = playerPosition
-    self.hp = 100
-    self.attack = 10
-    self.luck = 2
-    self.defense = 6
+    self.playerClass = playerClass.lower()
+    
+    classStats = self.CLASSES[self.playerClass]
+    self.hp = classStats['hp']
+    self.maxHp = classStats['hp']
+    self.attack = classStats['attack']
+    self.defense = classStats['defense']
+    self.luck = classStats['luck']
+    
     self.name = name
     self.inventory = []
     self.isInventoryOpen = False
     self.notificationMessage = ''
     self.notificationTime = 0
+    self.gold = 0
+    self.xp = 0
+    self.level = 1
+    self.xpToNextLevel = 100
+    self.term = term
 
   def removePlayer(self):
     self.lines[self.playerPosition[0]][self.playerPosition[1]] = '.'
 
   def movePlayer(self, sio):
     newPlayerPosition = self.playerPosition.copy()
+    key = self.term.inkey(timeout=0.05)
 
-    if keyboard.is_pressed('up'):
+    if key.name == 'KEY_UP' or key == 'w':
       self.lines[self.playerPosition[0]][self.playerPosition[1]] = '.'
       if self.pathIsBlocked([self.playerPosition[0]-1, self.playerPosition[1]]) == False:
         newPlayerPosition[0] -= 1
 
-    elif keyboard.is_pressed('down'):
+    elif key.name == 'KEY_DOWN' or key == 's':
       self.lines[self.playerPosition[0]][self.playerPosition[1]] = '.'
       if self.pathIsBlocked([self.playerPosition[0]+1, self.playerPosition[1]]) == False:
         newPlayerPosition[0] += 1
 
-    elif keyboard.is_pressed('left'):
+    elif key.name == 'KEY_LEFT' or key == 'a':
       self.lines[self.playerPosition[0]][self.playerPosition[1]] = '.'
       if self.pathIsBlocked([self.playerPosition[0], self.playerPosition[1]-1]) == False:
         newPlayerPosition[1] -= 1
 
-    elif keyboard.is_pressed('right'):
+    elif key.name == 'KEY_RIGHT' or key == 'd':
       self.lines[self.playerPosition[0]][self.playerPosition[1]] = '.'
       if self.pathIsBlocked([self.playerPosition[0], self.playerPosition[1]+1]) == False:
         newPlayerPosition[1] += 1
+    elif key == 'i':
+      self.isInventoryOpen = not self.isInventoryOpen
     
-    sio.emit('move', json.dumps({"playerId": self.name, "playerPosition": newPlayerPosition}))
-    sio.sleep(0.1)
-    self.playerPosition = newPlayerPosition
+    if newPlayerPosition != self.playerPosition:
+      sio.emit('move', json.dumps({"playerId": self.name, "playerPosition": newPlayerPosition}))
+      self.playerPosition = newPlayerPosition
 
   def pathIsBlocked(self, playerPosition):
     if playerPosition[0] < 0 or playerPosition[0] > self.windowHeight-1 or playerPosition[1] < 0 or playerPosition[1] > self.windowWidth-1:
@@ -58,6 +92,47 @@ class Player:
   
   def getName(self):
     return self.name
+  
+  def getPlayerClass(self):
+    return self.playerClass.capitalize()
+  
+  def getMaxHp(self):
+    return self.maxHp
+  
+  def getGold(self):
+    return self.gold
+  
+  def addGold(self, amount):
+    self.gold += amount
+  
+  def getXp(self):
+    return self.xp
+  
+  def getLevel(self):
+    return self.level
+  
+  def getXpToNextLevel(self):
+    return self.xpToNextLevel
+  
+  def addXp(self, amount):
+    self.xp += amount
+
+    while self.xp >= self.xpToNextLevel:
+      self.levelUp()
+  
+  def levelUp(self):
+    self.xp -= self.xpToNextLevel
+    self.level += 1
+    self.xpToNextLevel = int(self.xpToNextLevel * 1.5)
+    
+    self.maxHp += 10
+    self.hp = self.maxHp 
+    self.attack += 2
+    self.defense += 1
+    self.luck += 1
+    
+    self.notificationMessage = f"LEVEL UP! You are now level {self.level}!"
+    self.notificationTime = time.time()
 
   def getPlayerPosition(self):
     return self.playerPosition
@@ -105,16 +180,17 @@ class Player:
 
   def attackEnemy(self, enemy):
     criticalHit = random.random() < self.luck / 100
-    damage = self.attack - enemy.getDefense()
+    damage = max(1, self.attack - enemy.getDefense())
     if criticalHit:
       damage *= 2
-      print("Critical hit!")
+      print(self.term.bold_red("Critical hit!"))
 
     enemy.setHp(enemy.getHp() - damage)
-    print("You attacked the enemy for " + str(damage) + " damage!")
+    print(self.term.green("You attacked the enemy for " + str(damage) + " damage!"))
+    print(self.term.yellow("Enemy HP: " + str(max(0, enemy.getHp())) + "/" + str(enemy.getMaxHp())))
 
     if(enemy.getHp() <= 0):
-      print("You killed the enemy!")
+      print(self.term.bold_green("You killed the enemy!"))
       enemy.removeEnemy(self.lines)
 
   def getInventory(self):
@@ -134,9 +210,7 @@ class Player:
     self.isInventoryOpen = isInventoryOpen
 
   def inventoryControl(self):
-    if keyboard.is_pressed(34):
-      if self.isInventoryOpen == False:
-        self.isInventoryOpen = True
+    pass
 
   def dropItem(self, itemIndex):
     self.inventory.remove(self.inventory[int(itemIndex)])

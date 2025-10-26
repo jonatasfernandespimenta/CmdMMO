@@ -2,12 +2,28 @@ import time
 import random
 
 class Enemy:
-  def __init__(self, hp, attack, defense, name, position, lines):
+  def __init__(self, hp, attack, defense, name, position, lines, level=1, isBoss=False):
     self.enemyPosition = position
-    self.hp = hp
-    self.attack = attack
-    self.defense = defense
-    self.name = name
+    self.level = level
+    self.isBoss = isBoss
+    
+    if isBoss:
+      self.hp = (hp + (level - 1) * 5) * 3
+      self.maxHp = self.hp
+      self.attack = (attack + (level - 1) * 2) * 2
+      self.defense = (defense + (level - 1) * 1) * 2
+      self.name = name + ' (BOSS)'
+      self.goldDrop = random.randint(level * 50, level * 100)
+      self.xpDrop = random.randint(level * 100, level * 200)
+    else:
+      self.hp = hp + (level - 1) * 5
+      self.maxHp = self.hp
+      self.attack = attack + (level - 1) * 2
+      self.defense = defense + (level - 1) * 1
+      self.name = name
+      self.goldDrop = random.randint(level * 5, level * 15)
+      self.xpDrop = random.randint(level * 10, level * 25)
+    
     self.id = random.randint(0, 1000000)
     self.isInCombat = False
     self.lines = lines
@@ -62,7 +78,10 @@ class Enemy:
     return self.enemyPosition
   
   def drawEnemy(self, lines):
-    lines[self.enemyPosition[0]][self.enemyPosition[1]] = 'E'
+    if self.isBoss:
+      lines[self.enemyPosition[0]][self.enemyPosition[1]] = 'B'
+    else:
+      lines[self.enemyPosition[0]][self.enemyPosition[1]] = 'E'
 
   def getHp(self):
     return self.hp
@@ -81,6 +100,24 @@ class Enemy:
 
   def getID(self):
     return self.id
+  
+  def getLevel(self):
+    return self.level
+  
+  def getGoldDrop(self):
+    return self.goldDrop
+  
+  def getXpDrop(self):
+    return self.xpDrop
+  
+  def getMaxHp(self):
+    return self.maxHp
+  
+  def getName(self):
+    return self.name
+  
+  def getIsBoss(self):
+    return self.isBoss
 
   def removeEnemy(self, lines):
     lines[self.enemyPosition[0]][self.enemyPosition[1]] = '.'
