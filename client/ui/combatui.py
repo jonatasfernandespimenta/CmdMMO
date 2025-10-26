@@ -1,14 +1,17 @@
 import time
 
 class CombatUI:
-    def __init__(self, player, enemy, drawFunc):
+    def __init__(self, player, enemy, drawFunc, term):
         self.player = player
         self.enemy = enemy
         self.isPlayerTurn = True
         self.drawFunc = drawFunc
+        self.term = term
 
     def start(self):
-        print("You are fighting a " + self.enemy.name + "!")
+        print(self.term.home + self.term.clear)
+        print(self.term.bold_red("You are fighting a " + self.enemy.getName() + " [Lvl " + str(self.enemy.getLevel()) + "]!"))
+        print(self.term.yellow("Enemy HP: " + str(self.enemy.getHp()) + "/" + str(self.enemy.getMaxHp())))
         while self.player.hp > 0 and self.enemy.hp > 0:
             self.enemy.setIsInCombat(True)
 
@@ -22,28 +25,43 @@ class CombatUI:
                 self.redraw()
         
         self.enemy.setIsInCombat(False)
+        
+        if self.player.getHp() > 0:
+            goldEarned = self.enemy.getGoldDrop()
+            xpEarned = self.enemy.getXpDrop()
+            self.player.addGold(goldEarned)
+            self.player.addXp(xpEarned)
+            print(self.term.bold_yellow("\nYou earned " + str(goldEarned) + " gold and " + str(xpEarned) + " XP!"))
+            time.sleep(2)
 
     def player_turn(self):
-        print("It's your turn!")
-        print("What will you do?")
-        print("1. Attack")
-        print("2. Defend")
-        print("3. Use Item")
-        print("4. Run Away")
-        choice = input(">> ")
+        print(self.term.bold_cyan("\nIt's your turn!"))
+        print(self.term.yellow("What will you do?"))
+        print(self.term.green("1. ") + "Attack")
+        print(self.term.green("2. ") + "Defend")
+        print(self.term.green("3. ") + "Use Item")
+        print(self.term.green("4. ") + "Run Away")
+        
+        choice = ''
+        while True:
+            key = self.term.inkey(timeout=0.1)
+            if key and key.isprintable():
+                choice = key
+                break
+        
         if choice == "1":
             self.player.attackEnemy(self.enemy)
         elif choice == "2":
-            self.player.defend()
+            print(self.term.blue("You defended!"))
         elif choice == "3":
-            self.player.use_item()
+            print(self.term.yellow("No items to use!"))
         elif choice == "4":
-            self.player.run_away()
+            print(self.term.red("You ran away!"))
         else:
-            print("That's not a valid choice!")
+            print(self.term.red("That's not a valid choice!"))
 
     def enemy_turn(self):
-        print("It's the enemy's turn!")
+        print(self.term.bold_red("\nIt's the enemy's turn!"))
         self.enemy.attackPlayer(self.player)
     
     def redraw(self):

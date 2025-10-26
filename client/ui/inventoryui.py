@@ -1,35 +1,41 @@
 import time
-import os
+
 class InventoryUi:
-  def __init__(self, player):
+  def __init__(self, player, term):
     self.player = player
+    self.term = term
   
   def draw(self):
-    os.system('clear')
+    print(self.term.home + self.term.clear)
+    print(self.term.bold_cyan('=== INVENTORY ===\n'))
     playerInventory = self.player.getInventory()
 
     itemId = 0
 
     if len(playerInventory) == 0:
-      print("You have no items!")
+      print(self.term.yellow("You have no items!"))
 
     for item in playerInventory:
-      print(item['art'])
-      print('#' + str(itemId))
-      print(str(item['name']))
-      print('Quantity: ' + str(item['quantity']))
+      print(self.term.green(item['art']))
+      print(self.term.bold('#' + str(itemId)))
+      print(self.term.cyan(str(item['name'])))
+      print(self.term.white('Quantity: ') + self.term.yellow(str(item['quantity'])))
       itemId += 1
       print('\n')
 
-    print('\n\n\n\n')
+    print('\n\n')
 
-    print("What would you like to do?")
-    print("1. Equip Item")
-    #print("2. Use Item")
-    print("2. Drop Item")
-    print("3. Close Inventory")
+    print(self.term.bold_white("What would you like to do?"))
+    print(self.term.green("1. ") + "Equip Item")
+    print(self.term.green("2. ") + "Drop Item")
+    print(self.term.green("3. ") + "Close Inventory")
 
-    playerChoice = input(">> ")
+    playerChoice = ''
+    while True:
+      key = self.term.inkey(timeout=0.1)
+      if key and key.isprintable():
+        playerChoice = key
+        break
     
     if playerChoice == "1":
       self.equipItem()
@@ -41,18 +47,45 @@ class InventoryUi:
       self.player.setIsInventoryOpen(False)
   
   def dropItem(self):
-    print("Which item would you like to drop?")
-    playerChoice = input(">> ")
-    itemDropped = self.player.getInventory()[int(playerChoice)]
-    self.player.dropItem(playerChoice)
+    print(self.term.yellow("\nWhich item would you like to drop?"))
+    playerChoice = ''
+    while True:
+      key = self.term.inkey(timeout=0.1)
+      if key and key.isprintable():
+        playerChoice = key
+        break
     
-    print("You dropped " + str(itemDropped))
+    try:
+      itemDropped = self.player.getInventory()[int(playerChoice)]
+      self.player.dropItem(playerChoice)
+      print(self.term.green("You dropped " + itemDropped['name']))
+    except:
+      print(self.term.red("Invalid item!"))
+    
     time.sleep(1)
 
   def equipItem(self):
-    print("Which item would you like to equip/use?")
-    playerChoice = input(">> ")
-    self.player.equipItem(playerChoice)
-    print("You equipped " + str(self.player.getInventory()[int(playerChoice)]['name']))
-    self.player.dropItem(playerChoice)
+    print(self.term.yellow("\nWhich item would you like to equip/use?"))
+    playerChoice = ''
+    while True:
+      key = self.term.inkey(timeout=0.1)
+      if key and key.isprintable():
+        playerChoice = key
+        break
+    
+    inventory = self.player.getInventory()
+    
+    try:
+      if int(playerChoice) >= len(inventory) or int(playerChoice) < 0:
+        print(self.term.red("Invalid item selection!"))
+        time.sleep(1)
+        return
+      
+      itemName = inventory[int(playerChoice)]['name']
+      self.player.equipItem(playerChoice)
+      print(self.term.green("You equipped " + itemName))
+      self.player.dropItem(playerChoice)
+    except:
+      print(self.term.red("Invalid item!"))
+    
     time.sleep(1)
