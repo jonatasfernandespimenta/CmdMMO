@@ -1,9 +1,9 @@
-from arts.farm_elements import farm_house
-from ui.interaction_ui import InteractionUI
+from game.arts.farm_elements import farm_house
+from engine.ui.interaction_ui import InteractionUI
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-  from player import Player
+  from game.entities.player import Player
   from blessed import Terminal
 
 class FarmUI:

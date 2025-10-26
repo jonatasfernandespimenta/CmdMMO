@@ -1,9 +1,9 @@
 import random
-from enemy import Enemy
-from .procedural_board import ProceduralBoard
-from chest import Chest
-from .map import Map
-from .map_transition import DungeonNextLevelTransition, DungeonToCityTransition
+from game.entities.enemy import Enemy
+from engine.maps.procedural_board import ProceduralBoard
+from game.entities.chest import Chest
+from engine.maps.map import Map
+from game.maps.map_transition import DungeonNextLevelTransition, DungeonToCityTransition
 
 class Dungeon(Map):
   def __init__(self, enemies, chests, city_map=None):
@@ -127,7 +127,7 @@ class Dungeon(Map):
     if player.collidedWithEnemy(self.enemies):
       for enemy in self.enemies:
         if enemy.getEnemyPosition() == player.getPlayerPosition():
-          from ui.combatui import CombatUI
+          from game.ui.combatui import CombatUI
           combat = CombatUI(player, enemy, draw, term)
           combat.start()
           break

@@ -1,6 +1,6 @@
 import random
-from items.potions import potions
-from items.swords import swords
+from game.items.potions import potions
+from game.items.swords import swords
 
 class Chest:
   def __init__(self, position, lines):

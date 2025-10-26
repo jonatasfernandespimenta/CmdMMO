@@ -1,4 +1,4 @@
-from arts.potions import *
+from game.arts.potions import *
 
 potions = [
   {'name': 'Small Healing Potion', 'hp': 10, 'price': 10, 'category': 'Potion', 'art': smallPotion},

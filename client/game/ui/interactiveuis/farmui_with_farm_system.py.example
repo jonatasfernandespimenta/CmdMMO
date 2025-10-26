@@ -1,0 +1,120 @@
+# Example: FarmUI integrated with Farm system
+# This shows how FarmUI should be updated to use the Farm system
+# Rename this to farmui.py when ready to replace the current version
+
+from game.arts.farm_elements import farm_house
+from engine.ui.interaction_ui import InteractionUI
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+  from game.player import Player
+  from blessed import Terminal
+  from game.systems.farm_system import Farm
+
+class FarmUI:
+  """UI for interacting with the farm"""
+  
+  def __init__(self, player: 'Player', term: 'Terminal', farm: 'Farm'):
+    self.id = 'farm_plot_1'
+    self.player = player
+    self.farm = farm  # ✅ Now we have access to persistent Farm system
+    self.term = term
+    
+    self.ui = InteractionUI(player, term, {
+      'art': farm_house,
+      'message': 'Welcome to your farm!',
+      'show_gold': False,
+      'options': [
+        {'key': 'p', 'label': 'Plant Crop', 'action': self.plantCropMenu},
+        {'key': 'h', 'label': 'Harvest Crops', 'action': self.harvestCrops},
+        {'key': 'v', 'label': 'View Farm', 'action': self.viewFarm},
+      ]
+    })
+  
+  def checkIfPlayerOwnsFarm(self):
+    """Check if player owns this farm"""
+    for properties in self.player.getProperties():
+      if properties['id'] == self.id and properties['owned']:
+        return True
+    return False
+  
+  def plantCropMenu(self):
+    """Show menu to plant crops"""
+    if not self.checkIfPlayerOwnsFarm():
+      self.ui.showMessage('You need to buy this farm first!', 'red')
+      return
+    
+    # Example: plant a wheat crop at position [5, 10]
+    position = [5, 10]  # In a real implementation, player would choose position
+    growth_time = 30  # 30 seconds
+    
+    if self.farm.plantCrop('wheat', position, growth_time):
+      self.ui.showMessage('Planted wheat!', 'green')
+    else:
+      self.ui.showMessage('Cannot plant here!', 'red')
+  
+  def harvestCrops(self):
+    """Harvest all grown crops"""
+    if not self.checkIfPlayerOwnsFarm():
+      self.ui.showMessage('You need to buy this farm first!', 'red')
+      return
+    
+    harvested = 0
+    for position in list(self.farm.owned_plots):
+      item = self.farm.harvestCrop(position)
+      if item:
+        # Add item to player inventory
+        # self.player.addToInventory(item)
+        harvested += 1
+    
+    if harvested > 0:
+      self.ui.showMessage(f'Harvested {harvested} crops!', 'green')
+    else:
+      self.ui.showMessage('No crops ready to harvest!', 'yellow')
+  
+  def viewFarm(self):
+    """View current farm state"""
+    if not self.checkIfPlayerOwnsFarm():
+      self.ui.showMessage('You need to buy this farm first!', 'red')
+      return
+    
+    # Update all crops
+    self.farm.updateAllCrops()
+    
+    # Count crops by state
+    growing = 0
+    ready = 0
+    
+    for position in self.farm.owned_plots:
+      state = self.farm.getCropState(position)
+      if state:
+        if state == 'grown':
+          ready += 1
+        else:
+          growing += 1
+    
+    message = f'Plots: {len(self.farm.owned_plots)} | Growing: {growing} | Ready: {ready}'
+    self.ui.showMessage(message, 'white')
+  
+  def open(self):
+    """Open the farm UI"""
+    if not self.checkIfPlayerOwnsFarm():
+      self.ui.message = 'You need to buy this farm first!'
+    else:
+      self.ui.message = 'Welcome to your farm!'
+      # Update crops before opening
+      self.farm.updateAllCrops()
+    
+    self.ui.open()
+
+
+# How to use in city.py:
+"""
+def onEnterBuilding(self, buildingName, player, term):
+    if buildingName == 'FarmHouse':
+      from game.ui.interactiveuis.farmui import FarmUI
+      # Get farm system from game client (you'll need to pass game_client)
+      farm = game_client.getSystem('farm')
+      farmUi = FarmUI(player, term, farm)
+      farmUi.open()
+"""

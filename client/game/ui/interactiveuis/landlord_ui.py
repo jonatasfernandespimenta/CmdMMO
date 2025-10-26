@@ -1,9 +1,9 @@
-from arts.farm_elements import farm_merchant
-from ui.interaction_ui import InteractionUI
+from game.arts.farm_elements import farm_merchant
+from engine.ui.interaction_ui import InteractionUI
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-  from player import Player
+  from game.entities.player import Player
   from blessed import Terminal
 
 def add_property_to_player(item, ui):

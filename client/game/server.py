@@ -1,6 +1,6 @@
 import socketio
 import json
-from player import Player
+from game.entities.player import Player
 
 class Server:
   def __init__(self, sio, host, port, players, boardInfo):

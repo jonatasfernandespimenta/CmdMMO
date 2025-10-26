@@ -1,4 +1,4 @@
-from arts.swords import *
+from game.arts.swords import *
 
 swords = [
   {'name': 'Iron Sword', 'attack': 4, 'price': 6, 'category': 'Sword', 'art': rusty_iron_sword},

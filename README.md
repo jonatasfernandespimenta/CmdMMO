@@ -75,13 +75,15 @@ The server will start on port 3001.
 ### Start the Client
 In the project root directory, run:
 ```bash
-python client/main.py
+sudo python3 -m game.main
 ```
+
+**Note**: `sudo` is required for proper keyboard input handling.
 
 ### Multiple Players
 To play with multiple people, each player should:
 1. Ensure they can connect to the server (update server address in `client/server.py` if needed)
-2. Run `python client/main.py` in their own terminal
+2. Run `sudo python3 -m game.main` in their own terminal
 
 ## How to Play
 

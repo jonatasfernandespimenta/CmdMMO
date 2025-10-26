@@ -1,9 +1,10 @@
 import json
 import random
 import time
-from helper import blockers
+from engine.core.player import Player as BasePlayer
+from game.helper import blockers
 
-class Player:
+class Player(BasePlayer):
   CLASSES = {
     'rogue': {
       'hp': 80,
@@ -26,34 +27,23 @@ class Player:
   }
 
   def __init__(self, lines, windowWidth, windowHeight, playerPosition, name, playerClass, term):
-    self.lines = lines
-    self.windowWidth = windowWidth
-    self.windowHeight = windowHeight
-    self.playerPosition = playerPosition
-    self.playerClass = playerClass.lower()
+    # Initialize base player
+    super().__init__(lines, windowWidth, windowHeight, playerPosition, name, term, blockers)
     
+    # MMO-specific: Player class system
+    self.playerClass = playerClass.lower()
     classStats = self.CLASSES[self.playerClass]
+    
+    # Override base stats with class stats
     self.hp = classStats['hp']
     self.maxHp = classStats['hp']
     self.attack = classStats['attack']
     self.defense = classStats['defense']
     self.luck = classStats['luck']
     
-    self.name = name
-    self.inventory = []
-    self.isInventoryOpen = False
-    self.notificationMessage = ''
-    self.notificationTime = 0
-    self.gold = 0
-    self.xp = 0
-    self.level = 1
-    self.xpToNextLevel = 100
-    self.term = term
-    self.currentMap = 'dungeon'
+    # MMO-specific: Properties (houses, farms, etc)
     self.property = []
-
-  def removePlayer(self):
-    self.lines[self.playerPosition[0]][self.playerPosition[1]] = '.'
+    self.currentMap = 'dungeon'
 
   def addProperty(self, property):
     self.property.append(property)
@@ -62,42 +52,11 @@ class Player:
     return self.property
 
   def movePlayer(self, sio):
-    newPlayerPosition = self.playerPosition.copy()
-    key = self.term.inkey(timeout=0.05)
-
-    if key.name == 'KEY_UP' or key == 'w':
-      self.lines[self.playerPosition[0]][self.playerPosition[1]] = '.'
-      if self.pathIsBlocked([self.playerPosition[0]-1, self.playerPosition[1]]) == False:
-        newPlayerPosition[0] -= 1
-
-    elif key.name == 'KEY_DOWN' or key == 's':
-      self.lines[self.playerPosition[0]][self.playerPosition[1]] = '.'
-      if self.pathIsBlocked([self.playerPosition[0]+1, self.playerPosition[1]]) == False:
-        newPlayerPosition[0] += 1
-
-    elif key.name == 'KEY_LEFT' or key == 'a':
-      self.lines[self.playerPosition[0]][self.playerPosition[1]] = '.'
-      if self.pathIsBlocked([self.playerPosition[0], self.playerPosition[1]-1]) == False:
-        newPlayerPosition[1] -= 1
-
-    elif key.name == 'KEY_RIGHT' or key == 'd':
-      self.lines[self.playerPosition[0]][self.playerPosition[1]] = '.'
-      if self.pathIsBlocked([self.playerPosition[0], self.playerPosition[1]+1]) == False:
-        newPlayerPosition[1] += 1
-    elif key == 'i':
-      self.isInventoryOpen = not self.isInventoryOpen
+    """Override to add multiplayer network sync"""
+    def network_callback(new_position):
+      sio.emit('move', json.dumps({"playerId": self.name, "playerPosition": new_position}))
     
-    if newPlayerPosition != self.playerPosition:
-      sio.emit('move', json.dumps({"playerId": self.name, "playerPosition": newPlayerPosition}))
-      self.playerPosition = newPlayerPosition
-
-  def pathIsBlocked(self, playerPosition):
-    if playerPosition[0] < 0 or playerPosition[0] > self.windowHeight-1 or playerPosition[1] < 0 or playerPosition[1] > self.windowWidth-1:
-      return True
-    elif self.lines[playerPosition[0]][playerPosition[1]] in blockers:
-      return True
-    
-    return False
+    super().movePlayer(network_callback)
   
   def getName(self):
     return self.name

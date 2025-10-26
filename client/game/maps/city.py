@@ -1,7 +1,7 @@
-from .map import Map
-from arts.buildings import house, farm_house_map_version
-from .map_transition import CityToDungeonTransition
-from ui.interactiveuis.landlord_ui import LandlordUI
+from engine.maps.map import Map
+from game.arts.buildings import house, farm_house_map_version
+from game.maps.map_transition import CityToDungeonTransition
+from game.ui.interactiveuis.landlord_ui import LandlordUI
 
 class City(Map):
   def __init__(self, dungeon_map=None):
@@ -23,7 +23,7 @@ class City(Map):
       landLordUi = LandlordUI(player, term)
       landLordUi.open()
     elif buildingName == 'FarmHouse':
-      from ui.interactiveuis.farmui import FarmUI
+      from game.ui.interactiveuis.farmui import FarmUI
       farmUi = FarmUI(player, term)
       farmUi.open()
 
