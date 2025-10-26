@@ -1,13 +1,12 @@
 import random
 from enemy import Enemy
-from procedural_board import ProceduralBoard
+from .procedural_board import ProceduralBoard
 from chest import Chest
+from .map import Map
 
-class Board:
+class Dungeon(Map):
   def __init__(self, enemies, chests):
-    self.windowWidth = 30
-    self.windowHeight = 15
-    self.lines = []
+    super().__init__(30, 15)
     self.enemies = enemies
     self.chests = chests
     self.currentLevel = 1

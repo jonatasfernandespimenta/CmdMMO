@@ -1,6 +1,6 @@
 from blessed import Terminal
 from player import Player
-from board import Board
+from maps.dungeon import Dungeon
 from enemy import Enemy
 from ui.combatui import CombatUI
 from ui.inventoryui import InventoryUi
@@ -15,15 +15,14 @@ chests = []
 
 sio = socketio.Client()
 
-board = Board(enemies, chests)
-boardInfo = [board.getLines(), board.getWindowWidth(), board.getWindowHeight()]
+dungeon = Dungeon(enemies, chests)
+dungeonInfo = [dungeon.getLines(), dungeon.getWindowWidth(), dungeon.getWindowHeight()]
 
-server = Server(sio, 'localhost', 3001, players, boardInfo)
-
+server = Server(sio, 'localhost', 3001, players, dungeonInfo)
 
 def draw():
   print(term.home + term.clear)
-  board.init(players, term)
+  dungeon.init(players, term)
 
 def main():
   with term.fullscreen(), term.cbreak(), term.hidden_cursor():
@@ -75,10 +74,10 @@ def main():
         print(term.bold_cyan(playerClass.capitalize()))
         break
 
-    player = Player(boardInfo[0], boardInfo[1], boardInfo[2], [0, 0], playerName, playerClass, term)
+    player = Player(dungeonInfo[0], dungeonInfo[1], dungeonInfo[2], [0, 0], playerName, playerClass, term)
 
-    board.createRandomEnemies(5)
-    board.createRandomChests(5)
+    dungeon.createRandomEnemies(5)
+    dungeon.createRandomChests(5)
 
     combatUI = CombatUI(player, enemies, draw, term)
     inventoryUI = InventoryUi(player, term)
@@ -97,7 +96,7 @@ def main():
         print()
         print(term.move_y(term.height // 2 + 1) + term.center(term.cyan('Final Stats:')).rstrip())
         print(term.move_y(term.height // 2 + 2) + term.center(term.white('Level: ') + term.green(str(player.getLevel()))).rstrip())
-        print(term.move_y(term.height // 2 + 3) + term.center(term.white('Stage Reached: ') + term.magenta(str(board.getCurrentLevel()))).rstrip())
+        print(term.move_y(term.height // 2 + 3) + term.center(term.white('Stage Reached: ') + term.magenta(str(dungeon.getCurrentLevel()))).rstrip())
         print(term.move_y(term.height // 2 + 4) + term.center(term.white('Gold Collected: ') + term.yellow(str(player.getGold()))).rstrip())
         print()
         print(term.move_y(term.height // 2 + 6) + term.center(term.white('Press any key to exit...')).rstrip())
@@ -110,19 +109,19 @@ def main():
         draw()
       player.init(sio)
       
-      if board.isPortalActive() and board.getPortalPosition() == player.getPlayerPosition():
+      if dungeon.isPortalActive() and dungeon.getPortalPosition() == player.getPlayerPosition():
         print(term.home + term.clear)
-        print(term.move_y(term.height // 2 - 1) + term.center(term.bold_green('=== STAGE ' + str(board.getCurrentLevel()) + ' COMPLETE! ===')).rstrip())
+        print(term.move_y(term.height // 2 - 1) + term.center(term.bold_green('=== STAGE ' + str(dungeon.getCurrentLevel()) + ' COMPLETE! ===')).rstrip())
         print(term.move_y(term.height // 2 + 1) + term.center(term.bold_magenta('Entering portal...')).rstrip())
         
-        nextStage = board.getCurrentLevel() + 1
+        nextStage = dungeon.getCurrentLevel() + 1
         if nextStage % 5 == 0:
           print(term.move_y(term.height // 2 + 3) + term.center(term.bold_red('!!! WARNING: BOSS ROOM AHEAD !!!')).rstrip())
         
         print(term.move_y(term.height // 2 + 4) + term.center(term.yellow('Advancing to Stage ' + str(nextStage) + '...')).rstrip())
         import time
         time.sleep(3)
-        board.nextLevel()
+        dungeon.nextLevel()
 
       if player.collidedWithEnemy(enemies):
         for enemy in enemies:

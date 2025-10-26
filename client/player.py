@@ -48,6 +48,7 @@ class Player:
     self.level = 1
     self.xpToNextLevel = 100
     self.term = term
+    self.currentMap = 'dungeon'  # Track which map the player is on (dungeon, city, farm, arena)
 
   def removePlayer(self):
     self.lines[self.playerPosition[0]][self.playerPosition[1]] = '.'
@@ -232,3 +233,9 @@ class Player:
     if self.notificationTime > 0 and time.time() - self.notificationTime < 3:
       return self.notificationMessage
     return ''
+  
+  def getCurrentMap(self):
+    return self.currentMap
+  
+  def setCurrentMap(self, mapName):
+    self.currentMap = mapName

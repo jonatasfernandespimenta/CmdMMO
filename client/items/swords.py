@@ -1,6 +1,7 @@
 from arts.swords import *
 
 swords = [
+  {'name': 'Iron Sword', 'attack': 4, 'price': 6, 'category': 'Sword', 'art': rusty_iron_sword},
   {'name': 'Iron Sword', 'attack': 8, 'price': 15, 'category': 'Sword', 'art': iron_sword},
   #{'name': 'Steel Sword', 'attack': 12, 'price': 25, 'category': 'Sword', 'art': ""},
   #{'name': 'Golden Sword', 'attack': 15, 'price': 40, 'category': 'Sword', 'art': ""},
