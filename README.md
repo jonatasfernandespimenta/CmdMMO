@@ -237,6 +237,23 @@ Planned features and improvements for future versions:
 - Leaderboards showing top-ranked players
 - Visual rank indicators in player display
 
+### Overworld Map System
+- Open-world map with exploration and travel mechanics
+- Dungeon entrances scattered throughout the overworld
+- Wandering enemies that players can encounter and fight
+- Hidden areas and secrets to discover
+- Multiplayer interactions in shared overworld space
+
+### City Map System
+- Safe zone hub with multiple districts and NPCs
+- **Blacksmith District**: Upgrade weapons and armor
+- **Property Vendor**: Buy and manage player housing and farm
+- **Farming Zone**: Access personal farm for crop management
+- **Arena**: PvP battles
+- City quest board for side missions
+- Bank system for storing items and gold
+- Social spaces for player interactions
+
 ## Future Enhancements
 
 - More enemy types and variations
