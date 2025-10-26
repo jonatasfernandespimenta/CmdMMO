@@ -21,6 +21,10 @@ CmdMMO is a real-time multiplayer game that runs entirely in the terminal. Playe
 - **Loot System**: Collect potions and swords from chests scattered throughout the dungeon
 - **Inventory Management**: Store and use items to enhance your character
 - **Portal System**: Clear all enemies to spawn a portal to the next stage
+- **City Hub**: Safe zone with multiple buildings and NPCs for various interactions
+- **Farming System**: Plant and harvest crops to gather crafting materials
+- **Potion Crafting**: Trade harvested materials with the Alchemist to craft healing potions
+- **Property System**: Purchase and own properties like farms through the Landlord
 
 ## Tech Stack
 
@@ -206,20 +210,24 @@ Planned features and improvements for future versions:
 - Unique enchantments and forging recipes
 - Blacksmith NPC interaction in safe zones
 
-### Merchant System
-- Buy and sell items with gold
-- Rotating inventory of rare items
-- Price negotiation mechanics based on luck stat
-- Special merchant events and limited-time offers
-- Trade-in system for unwanted equipment
+### ✅ Merchant/Alchemist System (PARTIALLY IMPLEMENTED)
+- ✅ Buy potions with gold (Small: 100g, Medium: 200g)
+- ✅ Trade materials for potions (2 Mushrooms → Small Potion, 4 Mushrooms → Medium Potion)
+- ✅ NPC interaction UI with merchant ASCII art
+- 🔄 Rotating inventory of rare items (Coming soon)
+- 🔄 Price negotiation mechanics based on luck stat (Coming soon)
+- 🔄 Special merchant events and limited-time offers (Coming soon)
+- 🔄 Trade-in system for unwanted equipment (Coming soon)
 
 ### Expanded Item Variety
-- Armor sets (helmets, chest plates, boots, gloves)
-- Accessories (rings, amulets, talismans)
-- Consumables (buff potions, scrolls, food)
-- Crafting materials and resources
-- Legendary and mythic rarity items
-- Set bonuses for wearing complete equipment sets
+- ✅ Crafting materials (Mushrooms from farming)
+- ✅ Seeds as plantable items
+- 🔄 Armor sets (helmets, chest plates, boots, gloves) (Coming soon)
+- 🔄 Accessories (rings, amulets, talismans) (Coming soon)
+- 🔄 Consumables (buff potions, scrolls, food) (Coming soon)
+- 🔄 More crafting materials and resources (Coming soon)
+- 🔄 Legendary and mythic rarity items (Coming soon)
+- 🔄 Set bonuses for wearing complete equipment sets (Coming soon)
 
 ### GPT Integration for Story Generation
 - Dynamically generated quest narratives
@@ -229,13 +237,16 @@ Planned features and improvements for future versions:
 - Personalized dungeon backstories
 - AI-powered merchant personalities and interactions
 
-### Farming System
-- Plant and harvest crops in safe zones or home base
-- Grow alchemical ingredients for potion crafting
-- Time-based crop growth mechanics
-- Irrigation and fertilizer systems for better yields
-- Rare seed drops from enemies and chests
-- Trade or sell harvested crops to merchants
+### ✅ Farming System (IMPLEMENTED)
+- ✅ Plant and harvest crops in safe zones or home base
+- ✅ Grow alchemical ingredients for potion crafting
+- ✅ Time-based crop growth mechanics
+- ✅ Seed storage system (Silo)
+- ✅ Crop status tracking with growth percentage and time remaining
+- ✅ Property ownership requirement for farm access
+- 🔄 Irrigation and fertilizer systems for better yields (Coming soon)
+- 🔄 Rare seed drops from enemies and chests (Coming soon)
+- 🔄 Trade or sell harvested crops to merchants (Coming soon)
 
 ### Ranking System
 - Player progression tracked through rank tiers (gold, phase, level)
@@ -253,15 +264,18 @@ Planned features and improvements for future versions:
 - Hidden areas and secrets to discover
 - Multiplayer interactions in shared overworld space
 
-### City Map System
-- Safe zone hub with multiple districts and NPCs
-- **Blacksmith District**: Upgrade weapons and armor
-- **Property Vendor**: Buy and manage player housing and farm
-- **Farming Zone**: Access personal farm for crop management
-- **Arena**: PvP battles
-- City quest board for side missions
-- Bank system for storing items and gold
-- Social spaces for player interactions
+### ✅ City Map System (PARTIALLY IMPLEMENTED)
+- ✅ Safe zone hub with multiple buildings and NPCs
+- ✅ **Landlord House**: Buy and manage player properties (farm)
+- ✅ **Farm House**: Access personal farm for crop management
+- ✅ **Alchemist House**: Craft and buy potions using materials or gold
+- ✅ Portal system to transition between City and Dungeon
+- ✅ Building interaction system with door collision detection
+- 🔄 **Blacksmith District**: Upgrade weapons and armor (Coming soon)
+- 🔄 **Arena**: PvP battles (Coming soon)
+- 🔄 City quest board for side missions (Coming soon)
+- 🔄 Bank system for storing items and gold (Coming soon)
+- 🔄 Social spaces for player interactions (Coming soon)
 
 ## Future Enhancements
 
