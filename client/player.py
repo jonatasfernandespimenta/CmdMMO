@@ -1,6 +1,7 @@
 import json
 import random
 import time
+from helper import blockers
 
 class Player:
   CLASSES = {
@@ -86,7 +87,7 @@ class Player:
   def pathIsBlocked(self, playerPosition):
     if playerPosition[0] < 0 or playerPosition[0] > self.windowHeight-1 or playerPosition[1] < 0 or playerPosition[1] > self.windowWidth-1:
       return True
-    elif self.lines[playerPosition[0]][playerPosition[1]] == '#':
+    elif self.lines[playerPosition[0]][playerPosition[1]] in blockers:
       return True
     
     return False
@@ -166,6 +167,11 @@ class Player:
 
   def setPlayerPosition(self, playerPosition):
     self.playerPosition = playerPosition
+  
+  def setBoard(self, lines, windowWidth, windowHeight):
+    self.lines = lines
+    self.windowWidth = windowWidth
+    self.windowHeight = windowHeight
 
   def setAttack(self, attack):
     self.attack = attack

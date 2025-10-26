@@ -1,11 +1,13 @@
 from blessed import Terminal
 from player import Player
 from maps.dungeon import Dungeon
+from maps.city import City
 from enemy import Enemy
 from ui.combatui import CombatUI
 from ui.inventoryui import InventoryUi
 from server import Server
 import socketio
+import time
 
 term = Terminal()
 
@@ -15,16 +17,21 @@ chests = []
 
 sio = socketio.Client()
 
-dungeon = Dungeon(enemies, chests)
-dungeonInfo = [dungeon.getLines(), dungeon.getWindowWidth(), dungeon.getWindowHeight()]
+city = City()
+city.createBoard()
+current_map = city
 
-server = Server(sio, 'localhost', 3001, players, dungeonInfo)
+dungeon = Dungeon(enemies, chests)
+cityInfo = [city.getLines(), city.getWindowWidth(), city.getWindowHeight()]
+
+server = Server(sio, 'localhost', 3001, players, cityInfo)
 
 def draw():
   print(term.home + term.clear)
-  dungeon.init(players, term)
+  current_map.init(players, term)
 
 def main():
+  global current_map
   with term.fullscreen(), term.cbreak(), term.hidden_cursor():
     print(term.home + term.clear)
     print(term.move_y(term.height // 2 - 1) + term.center(term.bold_cyan('=== CMD MMO ===')).rstrip())
@@ -74,10 +81,7 @@ def main():
         print(term.bold_cyan(playerClass.capitalize()))
         break
 
-    player = Player(dungeonInfo[0], dungeonInfo[1], dungeonInfo[2], [0, 0], playerName, playerClass, term)
-
-    dungeon.createRandomEnemies(5)
-    dungeon.createRandomChests(5)
+    player = Player(cityInfo[0], cityInfo[1], cityInfo[2], [0, 0], playerName, playerClass, term)
 
     combatUI = CombatUI(player, enemies, draw, term)
     inventoryUI = InventoryUi(player, term)
@@ -109,7 +113,23 @@ def main():
         draw()
       player.init(sio)
       
-      if dungeon.isPortalActive() and dungeon.getPortalPosition() == player.getPlayerPosition():
+      # Transição da cidade para a dungeon
+      if current_map == city and city.getPortalPosition() == player.getPlayerPosition():
+        print(term.home + term.clear)
+        print(term.move_y(term.height // 2 - 1) + term.center(term.bold_cyan('=== ENTERING DUNGEON ===')).rstrip())
+        print(term.move_y(term.height // 2 + 1) + term.center(term.bold_magenta('Prepare for battle...')).rstrip())
+        time.sleep(2)
+        
+        # Muda para dungeon
+        current_map = dungeon
+        dungeon.createRandomEnemies(5)
+        dungeon.createRandomChests(5)
+        dungeonInfo = [dungeon.getLines(), dungeon.getWindowWidth(), dungeon.getWindowHeight()]
+        player.setBoard(dungeonInfo[0], dungeonInfo[1], dungeonInfo[2])
+        player.setPlayerPosition([0, 0])
+      
+      # Transição entre níveis da dungeon
+      if current_map == dungeon and dungeon.isPortalActive() and dungeon.getPortalPosition() == player.getPlayerPosition():
         print(term.home + term.clear)
         print(term.move_y(term.height // 2 - 1) + term.center(term.bold_green('=== STAGE ' + str(dungeon.getCurrentLevel()) + ' COMPLETE! ===')).rstrip())
         print(term.move_y(term.height // 2 + 1) + term.center(term.bold_magenta('Entering portal...')).rstrip())
@@ -119,11 +139,11 @@ def main():
           print(term.move_y(term.height // 2 + 3) + term.center(term.bold_red('!!! WARNING: BOSS ROOM AHEAD !!!')).rstrip())
         
         print(term.move_y(term.height // 2 + 4) + term.center(term.yellow('Advancing to Stage ' + str(nextStage) + '...')).rstrip())
-        import time
         time.sleep(3)
         dungeon.nextLevel()
+        player.setPlayerPosition([0, 0])
 
-      if player.collidedWithEnemy(enemies):
+      if current_map == dungeon and player.collidedWithEnemy(enemies):
         for enemy in enemies:
           if enemy.getEnemyPosition() == player.getPlayerPosition():
             combatUI = CombatUI(player, enemy, draw, term)
