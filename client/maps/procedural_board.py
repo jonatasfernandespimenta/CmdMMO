@@ -63,7 +63,6 @@ class ProceduralBoard:
 
   def getBlockedDirections(self, currentCell, character='X'):
     blockedDirections = []
-    
 
     if currentCell[0] + 1 >= self.boardHeight:
       blockedDirections.append(0)

@@ -26,3 +26,12 @@ class Map:
   def init(self, players, term):
     """Initialize and draw the map"""
     raise NotImplementedError("Subclasses must implement init()")
+  
+  def placeArt(self, startY: int, startX: int, art):
+    for y in range(len(art)):
+      for x in range(len(art[y])):
+        if startY + y < self.windowHeight and startX + x < self.windowWidth:
+          self.lines[startY + y][startX + x] = art[y][x]
+
+  def convertArtToBoardItem(self, art: str):
+    return [list(line) for line in art.split('\n')]
