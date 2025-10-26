@@ -16,7 +16,7 @@ class FarmUI:
     self.ui = InteractionUI(player, term, {
       'art': farm_house,
       'message': 'Welcome to your farm!',
-      'show_gold': True,
+      'show_gold': False,
       'options': [
         # Add farm-specific options here later
       ]
