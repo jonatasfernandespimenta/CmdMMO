@@ -123,6 +123,6 @@ def main():
         transition.execute(player, term)
         current_map = transition.getDestinationMap()
 
-      current_map.handleCollisions(player, combatUI, draw, term)
+      current_map.handleCollisions(player, draw, term)
 
 main()

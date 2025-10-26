@@ -1,6 +1,7 @@
 from .map import Map
 from arts.buildings import house
 from .map_transition import CityToDungeonTransition
+from ui.landlord_ui import LandlordUI
 
 class City(Map):
   def __init__(self, dungeon_map=None):
@@ -9,18 +10,33 @@ class City(Map):
     self.portalPosition = [self.windowHeight // 2, self.windowWidth - 1]
     self.dungeon_map = dungeon_map
 
-  def calculateDoorPosition(self, art):
+  def calculateDoorPositions(self, art):
+    doors = []
     for y in range(len(art)):
       for x in range(len(art[y])):
-        if art[y][x] == '  ':
-          return (y, x)
-    return (0, 0)
+        if art[y][x] == 'H':
+          doors.append((y, x))
+    return doors if doors else [(0, 0)]
+
+  def onEnterBuilding(self, buildingName, player, term):
+    if buildingName == 'LandLordHouse':
+      landLordUi = LandlordUI(player, term)
+      landLordUi.open()
 
   def generateHouses(self):
     houseArt = self.convertArtToBoardItem(house)
-    houseDoorPosition = self.calculateDoorPosition(houseArt)
+    houseDoorPositions = self.calculateDoorPositions(houseArt)
+    
+    doorPositions = [(8 + door[0], 8 + door[1]) for door in houseDoorPositions]
+    self.buildings.append({ 'name': 'LandLordHouse', 'startY': 8, 'startX': 8, 'art': houseArt, 'onEnter': self.onEnterBuilding, 'doorPositions': doorPositions })
 
-    self.buildings.append({ 'name': 'LandLordHouse', 'startY': 8, 'startX': 8, 'art': houseArt, 'onEnter': None, 'doorPosition': (8 + houseDoorPosition[0], 8 + houseDoorPosition[1]) })
+  def handleCollisions(self, player, draw, term):
+    """Handle building collisions in city"""
+    for building in self.buildings:
+      for doorPosition in building['doorPositions']:
+        if player.getPlayerPosition() == list(doorPosition):
+          building['onEnter'](building['name'], player, term)
+          break
 
   def initBuildings(self):
     self.generateHouses()
@@ -72,11 +88,16 @@ class City(Map):
     """Always draw dungeon entrance portal"""
     self.lines[self.portalPosition[0]][self.portalPosition[1]] = 'D'
   
+  def redrawBuildings(self):
+    """Redraw all buildings (in case they were overwritten by player movement)"""
+    for building in self.buildings:
+      self.placeArt(building['startY'], building['startX'], building['art'])
+  
   def init(self, players, term):
     if len(self.lines) == 0:
       self.createBoard()
     
-    # Always redraw portal (in case it was overwritten by player movement)
+    self.redrawBuildings()
     self.drawPortal()
     
     for player in players:

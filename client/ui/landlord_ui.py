@@ -1,11 +1,16 @@
-from arts.merchant import merchant
+from arts.farm_elements import farm_merchant
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+  from player import Player
+  from blessed import Terminal
 
 class LandlordUI:
   """UI for interacting with the landlord (property vendor)"""
   
-  def __init__(self, player, term):
-    self.player = player
-    self.term = term
+  def __init__(self, player: 'Player', term: 'Terminal'):
+    self.player: Player = player
+    self.term: Terminal = term
     self.isOpen = False
     self.properties = [
       {
@@ -21,7 +26,7 @@ class LandlordUI:
     print(self.term.home + self.term.clear)
     
     # Draw merchant art
-    merchantLines = merchant.split('\n')
+    merchantLines = farm_merchant.split('\n')
     for line in merchantLines:
       print(self.term.yellow(line))
     
@@ -39,7 +44,13 @@ class LandlordUI:
     print(self.term.bold_cyan('=' * 60))
     print(self.term.white('  [1-3] Buy property | [Q] Exit'))
     print(self.term.bold_cyan('=' * 60))
-  
+
+  def handleExit(self, key):
+    if key.lower() == 'q':
+      currentPosition = self.player.getPlayerPosition()
+      self.player.setPlayerPosition([currentPosition[0] + 1, currentPosition[1]])
+      self.isOpen = False
+
   def open(self):
     """Open the landlord UI and handle interactions"""
     self.isOpen = True
@@ -49,9 +60,9 @@ class LandlordUI:
       
       key = self.term.inkey(timeout=None)
       
-      if key.lower() == 'q':
-        self.isOpen = False
-      elif key in ['1', '2', '3']:
+      self.handleExit(key)
+
+      if key in ['1', '2', '3']:
         propIndex = int(key) - 1
         self.buyProperty(propIndex)
   
