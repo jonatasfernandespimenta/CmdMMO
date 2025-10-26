@@ -1,11 +1,13 @@
 from .map import Map
 from arts.buildings import house
+from .map_transition import CityToDungeonTransition
 
 class City(Map):
-  def __init__(self):
+  def __init__(self, dungeon_map=None):
     super().__init__(60, 30)
     self.buildings = []
     self.portalPosition = [self.windowHeight // 2, self.windowWidth - 1]
+    self.dungeon_map = dungeon_map
 
   def calculateDoorPosition(self, art):
     for y in range(len(art)):
@@ -66,9 +68,16 @@ class City(Map):
       print(term.bold_green(notification))
     print(term.bold_white('=' * self.windowWidth))
   
+  def drawPortal(self):
+    """Always draw dungeon entrance portal"""
+    self.lines[self.portalPosition[0]][self.portalPosition[1]] = 'D'
+  
   def init(self, players, term):
     if len(self.lines) == 0:
       self.createBoard()
+    
+    # Always redraw portal (in case it was overwritten by player movement)
+    self.drawPortal()
     
     for player in players:
       player.drawPlayer()
@@ -78,3 +87,11 @@ class City(Map):
 
   def getPortalPosition(self):
     return self.portalPosition
+  
+  def setDungeonMap(self, dungeon_map):
+    self.dungeon_map = dungeon_map
+  
+  def checkPortalTransition(self, player):
+    if self.portalPosition == player.getPlayerPosition() and self.dungeon_map:
+      return CityToDungeonTransition(self.dungeon_map, [0, 0])
+    return None

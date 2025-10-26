@@ -19,9 +19,13 @@ sio = socketio.Client()
 
 city = City()
 city.createBoard()
-current_map = city
 
 dungeon = Dungeon(enemies, chests)
+dungeon.setCityMap(city)
+city.setDungeonMap(dungeon)
+
+current_map = city
+
 cityInfo = [city.getLines(), city.getWindowWidth(), city.getWindowHeight()]
 
 server = Server(sio, 'localhost', 3001, players, cityInfo)
@@ -113,41 +117,12 @@ def main():
         draw()
       player.init(sio)
       
-      # Transição da cidade para a dungeon
-      if current_map == city and city.getPortalPosition() == player.getPlayerPosition():
-        print(term.home + term.clear)
-        print(term.move_y(term.height // 2 - 1) + term.center(term.bold_cyan('=== ENTERING DUNGEON ===')).rstrip())
-        print(term.move_y(term.height // 2 + 1) + term.center(term.bold_magenta('Prepare for battle...')).rstrip())
-        time.sleep(2)
-        
-        # Muda para dungeon
-        current_map = dungeon
-        dungeon.createRandomEnemies(5)
-        dungeon.createRandomChests(5)
-        dungeonInfo = [dungeon.getLines(), dungeon.getWindowWidth(), dungeon.getWindowHeight()]
-        player.setBoard(dungeonInfo[0], dungeonInfo[1], dungeonInfo[2])
-        player.setPlayerPosition([0, 0])
-      
-      # Transição entre níveis da dungeon
-      if current_map == dungeon and dungeon.isPortalActive() and dungeon.getPortalPosition() == player.getPlayerPosition():
-        print(term.home + term.clear)
-        print(term.move_y(term.height // 2 - 1) + term.center(term.bold_green('=== STAGE ' + str(dungeon.getCurrentLevel()) + ' COMPLETE! ===')).rstrip())
-        print(term.move_y(term.height // 2 + 1) + term.center(term.bold_magenta('Entering portal...')).rstrip())
-        
-        nextStage = dungeon.getCurrentLevel() + 1
-        if nextStage % 5 == 0:
-          print(term.move_y(term.height // 2 + 3) + term.center(term.bold_red('!!! WARNING: BOSS ROOM AHEAD !!!')).rstrip())
-        
-        print(term.move_y(term.height // 2 + 4) + term.center(term.yellow('Advancing to Stage ' + str(nextStage) + '...')).rstrip())
-        time.sleep(3)
-        dungeon.nextLevel()
-        player.setPlayerPosition([0, 0])
+      # Check for portal transitions
+      transition = current_map.checkPortalTransition(player)
+      if transition:
+        transition.execute(player, term)
+        current_map = transition.getDestinationMap()
 
-      if current_map == dungeon and player.collidedWithEnemy(enemies):
-        for enemy in enemies:
-          if enemy.getEnemyPosition() == player.getPlayerPosition():
-            combatUI = CombatUI(player, enemy, draw, term)
-            combatUI.start()
-            break
+      current_map.handleCollisions(player, combatUI, draw, term)
 
 main()

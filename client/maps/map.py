@@ -27,6 +27,14 @@ class Map:
     """Initialize and draw the map"""
     raise NotImplementedError("Subclasses must implement init()")
   
+  def handleCollisions(self, player, combatUI, draw, term):
+    """Handle collision logic specific to this map (enemies, NPCs, etc.)"""
+    pass
+  
+  def checkPortalTransition(self, player):
+    """Check if player is on a portal and return the transition object"""
+    return None
+  
   def placeArt(self, startY: int, startX: int, art):
     for y in range(len(art)):
       for x in range(len(art[y])):

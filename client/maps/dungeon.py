@@ -3,15 +3,18 @@ from enemy import Enemy
 from .procedural_board import ProceduralBoard
 from chest import Chest
 from .map import Map
+from .map_transition import DungeonNextLevelTransition, DungeonToCityTransition
 
 class Dungeon(Map):
-  def __init__(self, enemies, chests):
+  def __init__(self, enemies, chests, city_map=None):
     super().__init__(30, 15)
     self.enemies = enemies
     self.chests = chests
     self.currentLevel = 1
     self.portalPosition = None
     self.portalActive = False
+    self.exitPortalPosition = [0, 1]  # Exit portal next to spawn point
+    self.city_map = city_map
 
   def createBoard(self):
     board = [['.' for i in range(self.windowWidth + 1)] for j in range(self.windowHeight + 1)]
@@ -96,6 +99,11 @@ class Dungeon(Map):
     if self.portalActive and self.portalPosition:
       self.lines[self.portalPosition[0]][self.portalPosition[1]] = 'U'
   
+  def drawExitPortal(self):
+    """Draw exit portal at spawn point (returns to city)"""
+    if self.lines[self.exitPortalPosition[0]][self.exitPortalPosition[1]] == '.':
+      self.lines[self.exitPortalPosition[0]][self.exitPortalPosition[1]] = 'U'
+  
   def getPortalPosition(self):
     return self.portalPosition
   
@@ -114,6 +122,32 @@ class Dungeon(Map):
   def isBossStage(self):
     return self.currentLevel % 5 == 0
   
+  def handleCollisions(self, player, combatUI, draw, term):
+    """Handle enemy collisions in dungeon"""
+    if player.collidedWithEnemy(self.enemies):
+      for enemy in self.enemies:
+        if enemy.getEnemyPosition() == player.getPlayerPosition():
+          from ui.combatui import CombatUI
+          combat = CombatUI(player, enemy, draw, term)
+          combat.start()
+          break
+  
+  def setCityMap(self, city_map):
+    self.city_map = city_map
+  
+  def checkPortalTransition(self, player):
+    """Check if player stepped on a portal"""
+    # Exit portal - return to city (spawn away from entrance portal)
+    if self.exitPortalPosition == player.getPlayerPosition() and self.city_map:
+      city_portal = self.city_map.getPortalPosition()
+      safe_spawn = [city_portal[0], city_portal[1] - 2]  # Spawn 2 tiles left of portal
+      return DungeonToCityTransition(self.city_map, safe_spawn)
+    
+    # Next level portal
+    if self.isPortalActive() and self.getPortalPosition() == player.getPlayerPosition():
+      return DungeonNextLevelTransition(self, [0, 0])
+    
+    return None
   def createRandomEnemies(self, amount):
     if self.isBossStage():
       # Boss room: spawn boss + random minions
@@ -144,6 +178,9 @@ class Dungeon(Map):
     
     if self.portalActive:
       self.drawPortal()
+    
+    # Always draw exit portal
+    self.drawExitPortal()
 
     for player in players:
       player.drawPlayer()
