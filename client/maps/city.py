@@ -7,18 +7,18 @@ class City(Map):
     self.buildings = []
     self.portalPosition = [self.windowHeight // 2, self.windowWidth - 1]
 
+  def calculateDoorPosition(self, art):
+    for y in range(len(art)):
+      for x in range(len(art[y])):
+        if art[y][x] == '  ':
+          return (y, x)
+    return (0, 0)
+
   def generateHouses(self):
     houseArt = self.convertArtToBoardItem(house)
+    houseDoorPosition = self.calculateDoorPosition(houseArt)
 
-    houseAmount = list(range(6))
-    houseRows = list(range(2))
-
-    for row in houseRows:
-      for i in houseAmount:
-        if i == 0:
-          self.buildings.append({ 'startY': 8, 'startX': 8, 'art': houseArt })
-        else:  
-          self.buildings.append({ 'startY': row * 8, 'startX': i * 8, 'art': houseArt })
+    self.buildings.append({ 'name': 'LandLordHouse', 'startY': 8, 'startX': 8, 'art': houseArt, 'onEnter': None, 'doorPosition': (8 + houseDoorPosition[0], 8 + houseDoorPosition[1]) })
 
   def initBuildings(self):
     self.generateHouses()
