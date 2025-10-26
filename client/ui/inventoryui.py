@@ -52,7 +52,15 @@ class InventoryUi:
   def equipItem(self):
     print("Which item would you like to equip/use?")
     playerChoice = input(">> ")
+    inventory = self.player.getInventory()
+    
+    if int(playerChoice) >= len(inventory) or int(playerChoice) < 0:
+      print("Invalid item selection!")
+      time.sleep(1)
+      return
+    
+    itemName = inventory[int(playerChoice)]['name']
     self.player.equipItem(playerChoice)
-    print("You equipped " + str(self.player.getInventory()[int(playerChoice)]['name']))
+    print("You equipped " + itemName)
     self.player.dropItem(playerChoice)
     time.sleep(1)

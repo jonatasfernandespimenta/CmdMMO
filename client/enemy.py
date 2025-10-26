@@ -89,7 +89,14 @@ class Enemy:
     self.defense = defense
 
   def attackPlayer(self, player):
-    if self.attack - player.getDefense() >= 0:
-      player.setHp(player.getHp() - (self.attack - player.getDefense()))
+    playerLuck = player.getLuck() 
 
-    print("The enemy attacked you for " + str(self.attack - player.getDefense()) + " damage!")
+    missChance = random.random() < playerLuck / 100
+
+    if not missChance:
+      if self.attack - player.getDefense() >= 0:
+        player.setHp(player.getHp() - (self.attack - player.getDefense()))
+
+      print("The enemy attacked you for " + str(self.attack - player.getDefense()) + " damage!")
+    else:
+      print("The enemy's attack missed!")

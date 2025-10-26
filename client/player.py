@@ -1,5 +1,6 @@
 import json
 import keyboard
+import random
 
 class Player:
   def __init__(self, lines, windowWidth, windowHeight, playerPosition, name):
@@ -9,10 +10,13 @@ class Player:
     self.playerPosition = playerPosition
     self.hp = 100
     self.attack = 10
+    self.luck = 2
     self.defense = 6
     self.name = name
     self.inventory = []
     self.isInventoryOpen = False
+    self.notificationMessage = ''
+    self.notificationTime = 0
 
   def removePlayer(self):
     self.lines[self.playerPosition[0]][self.playerPosition[1]] = '.'
@@ -66,6 +70,9 @@ class Player:
   
   def getAttack(self):
     return self.attack
+
+  def getLuck(self):
+    return self.luck
   
   def getDefense(self):
     return self.defense
@@ -77,6 +84,9 @@ class Player:
     if chest.getPosition() == self.playerPosition and chest.open == False:
       loot = chest.openChest()
       self.inventory.append(loot)
+      import time
+      self.notificationMessage = f"You collected: {loot['name']}!"
+      self.notificationTime = time.time()
 
   def setPlayerPosition(self, playerPosition):
     self.playerPosition = playerPosition
@@ -94,8 +104,14 @@ class Player:
     return False
 
   def attackEnemy(self, enemy):
-    enemy.setHp(enemy.getHp() - (self.attack - enemy.getDefense()))
-    print("You attacked the enemy for " + str(self.attack - enemy.getDefense()) + " damage!")
+    criticalHit = random.random() < self.luck / 100
+    damage = self.attack - enemy.getDefense()
+    if criticalHit:
+      damage *= 2
+      print("Critical hit!")
+
+    enemy.setHp(enemy.getHp() - damage)
+    print("You attacked the enemy for " + str(damage) + " damage!")
 
     if(enemy.getHp() <= 0):
       print("You killed the enemy!")
@@ -136,3 +152,9 @@ class Player:
   def init(self, sio):
     self.movePlayer(sio)
     self.inventoryControl()
+  
+  def getNotification(self):
+    import time
+    if self.notificationTime > 0 and time.time() - self.notificationTime < 3:
+      return self.notificationMessage
+    return ''

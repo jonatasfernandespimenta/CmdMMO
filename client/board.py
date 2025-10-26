@@ -47,6 +47,9 @@ class Board:
     print('=' * self.windowWidth)
     print('Name: ' + player.getName() + ' | HP: ' + str(player.getHp()))
     print('Attack: ' + str(player.getAttack()) + ' | Defense: ' + str(player.getDefense()))
+    notification = player.getNotification()
+    if notification:
+      print(notification)
     print('=' * self.windowWidth)
 
   def getLines(self):
