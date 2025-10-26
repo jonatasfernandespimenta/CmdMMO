@@ -1,5 +1,5 @@
 from .map import Map
-from arts.buildings import house
+from arts.buildings import house, farm_house_map_version
 from .map_transition import CityToDungeonTransition
 from ui.landlord_ui import LandlordUI
 
@@ -22,16 +22,25 @@ class City(Map):
     if buildingName == 'LandLordHouse':
       landLordUi = LandlordUI(player, term)
       landLordUi.open()
+    elif buildingName == 'FarmHouse':
+      from ui.farmui import FarmUI
+      farmUi = FarmUI(player, term)
+      farmUi.open()
 
   def generateHouses(self):
     houseArt = self.convertArtToBoardItem(house)
+    farmHouseArt = self.convertArtToBoardItem(farm_house_map_version)
+
     houseDoorPositions = self.calculateDoorPositions(houseArt)
-    
+    farmHouseDoorPositions = self.calculateDoorPositions(farmHouseArt)
+
     doorPositions = [(8 + door[0], 8 + door[1]) for door in houseDoorPositions]
+    farmHousePositions = [(20 + door[0], 30 + door[1]) for door in farmHouseDoorPositions]
+
     self.buildings.append({ 'name': 'LandLordHouse', 'startY': 8, 'startX': 8, 'art': houseArt, 'onEnter': self.onEnterBuilding, 'doorPositions': doorPositions })
+    self.buildings.append({ 'name': 'FarmHouse', 'startY': 20, 'startX': 30, 'art': farmHouseArt, 'onEnter': self.onEnterBuilding, 'doorPositions': farmHousePositions })
 
   def handleCollisions(self, player, draw, term):
-    """Handle building collisions in city"""
     for building in self.buildings:
       for doorPosition in building['doorPositions']:
         if player.getPlayerPosition() == list(doorPosition):

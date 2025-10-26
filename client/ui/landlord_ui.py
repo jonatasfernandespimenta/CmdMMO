@@ -14,6 +14,7 @@ class LandlordUI:
     self.isOpen = False
     self.properties = [
       {
+        'id': 'farm_plot_1',
         'name': 'Farm Plot',
         'price': 2500,
         'description': 'Your own farmland to grow crops',
@@ -86,5 +87,6 @@ class LandlordUI:
     # Purchase successful
     self.player.addGold(-prop['price'])
     prop['owned'] = True
+    self.player.addProperty(prop)
     print(self.term.move_y(self.term.height - 2) + self.term.center(self.term.bold_green(f'Purchased {prop["name"]}!')).rstrip())
     self.term.inkey(timeout=2)

@@ -49,10 +49,17 @@ class Player:
     self.level = 1
     self.xpToNextLevel = 100
     self.term = term
-    self.currentMap = 'dungeon'  # Track which map the player is on (dungeon, city, farm, arena)
+    self.currentMap = 'dungeon'
+    self.property = []
 
   def removePlayer(self):
     self.lines[self.playerPosition[0]][self.playerPosition[1]] = '.'
+
+  def addProperty(self, property):
+    self.property.append(property)
+
+  def getProperties(self):
+    return self.property
 
   def movePlayer(self, sio):
     newPlayerPosition = self.playerPosition.copy()
