@@ -41,7 +41,7 @@ class Crop:
       return {
         'name': self.name,
         'harvested_at': datetime.now(),
-        'quantity': randint(1, 4)
+        'quantity': randint(2, 4)
       }
     else:
       return None

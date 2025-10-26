@@ -1,5 +1,5 @@
 from engine.maps.map import Map
-from game.arts.buildings import house, farm_house_map_version
+from game.arts.buildings import house, farm_house_map_version, mushroom_house
 from game.maps.map_transition import CityToDungeonTransition
 from game.ui.interactiveuis.landlord_ui import LandlordUI
 
@@ -26,19 +26,27 @@ class City(Map):
       from game.ui.interactiveuis.farmui import FarmUI
       farmUi = FarmUI(player, term)
       farmUi.open()
+    elif buildingName == 'AlchemistHouse':
+      from game.ui.interactiveuis.alchemist_ui import AlchemistUI
+      alchemistUi = AlchemistUI(player, term)
+      alchemistUi.open()
 
   def generateHouses(self):
     houseArt = self.convertArtToBoardItem(house)
     farmHouseArt = self.convertArtToBoardItem(farm_house_map_version)
+    mushroomHouseArt = self.convertArtToBoardItem(mushroom_house)
 
     houseDoorPositions = self.calculateDoorPositions(houseArt)
     farmHouseDoorPositions = self.calculateDoorPositions(farmHouseArt)
+    mushroomHouseDoorPositions = self.calculateDoorPositions(mushroomHouseArt)
 
     doorPositions = [(8 + door[0], 8 + door[1]) for door in houseDoorPositions]
     farmHousePositions = [(20 + door[0], 30 + door[1]) for door in farmHouseDoorPositions]
+    mushroomHousePositions = [(20 + door[0], 8 + door[1]) for door in mushroomHouseDoorPositions]
 
     self.buildings.append({ 'name': 'LandLordHouse', 'startY': 8, 'startX': 8, 'art': houseArt, 'onEnter': self.onEnterBuilding, 'doorPositions': doorPositions })
     self.buildings.append({ 'name': 'FarmHouse', 'startY': 20, 'startX': 30, 'art': farmHouseArt, 'onEnter': self.onEnterBuilding, 'doorPositions': farmHousePositions })
+    self.buildings.append({ 'name': 'AlchemistHouse', 'startY': 20, 'startX': 8, 'art': mushroomHouseArt, 'onEnter': self.onEnterBuilding, 'doorPositions': mushroomHousePositions })
 
   def handleCollisions(self, player, draw, term):
     for building in self.buildings:

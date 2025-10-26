@@ -110,6 +110,19 @@ class FarmUI:
           selectedCrop = readyCrops[cropIndex]
           harvestInfo = selectedCrop.harvest()
           if harvestInfo:
+            from game.items.materials import materials
+            material = next((m for m in materials if m['name'] == harvestInfo['name']), None)
+            
+            if material:
+              for _ in range(harvestInfo['quantity']):
+                self.player.addToInventory(material)
+            else:
+              for _ in range(harvestInfo['quantity']):
+                self.player.inventory.append({
+                  'name': harvestInfo['name'],
+                  'category': 'material'
+                })
+            
             print(f"You have harvested {harvestInfo['quantity']} of {harvestInfo['name']}.")
             self.farm.crops.remove(selectedCrop)
             self.ui.term.inkey(timeout=2)

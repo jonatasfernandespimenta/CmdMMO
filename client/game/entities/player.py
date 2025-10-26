@@ -49,12 +49,6 @@ class Player(BasePlayer):
     
     # MMO-specific: Farm system
     self.farm = Farm(self)
-    
-    # Testing: Add mushroom seed to inventory
-    from game.items.materials import seeds
-    mushroom_seed = next(s for s in seeds if s['name'] == 'Mushroom Seed')
-    self.inventory.append(mushroom_seed)
-
   # ==================== MMO-Specific ====================
   
   def getPlayerClass(self):

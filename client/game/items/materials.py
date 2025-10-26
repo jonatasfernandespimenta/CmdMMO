@@ -7,6 +7,13 @@ materials = [
     'rarity': 'common',
     'art': snake_skin,
     'sell_price': 5
+  },
+  {
+    'name': 'Mushroom',
+    'category': 'material',
+    'rarity': 'uncommon',
+    'art': mushroom,
+    'sell_price': 25
   }
 ]
 

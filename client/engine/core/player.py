@@ -51,7 +51,7 @@ class Player:
     # Inventory system
     self.inventory = []
     self.isInventoryOpen = False
-    self.gold = 6000
+    self.gold = 0
     
     # Notifications
     self.notificationMessage = ''
