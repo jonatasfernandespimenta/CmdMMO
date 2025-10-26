@@ -122,7 +122,7 @@ class Dungeon(Map):
   def isBossStage(self):
     return self.currentLevel % 5 == 0
   
-  def handleCollisions(self, player, combatUI, draw, term):
+  def handleCollisions(self, player, draw, term):
     """Handle enemy collisions in dungeon"""
     if player.collidedWithEnemy(self.enemies):
       for enemy in self.enemies:

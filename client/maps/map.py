@@ -27,7 +27,7 @@ class Map:
     """Initialize and draw the map"""
     raise NotImplementedError("Subclasses must implement init()")
   
-  def handleCollisions(self, player, combatUI, draw, term):
+  def handleCollisions(self, player, draw, term):
     """Handle collision logic specific to this map (enemies, NPCs, etc.)"""
     pass
   
