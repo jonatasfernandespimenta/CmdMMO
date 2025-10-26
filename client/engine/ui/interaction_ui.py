@@ -50,11 +50,11 @@ class InteractionUI:
     # Draw options footer
     print(self.term.bold_cyan('=' * 60))
     if self.options:
-      option_text = ' | '.join([f"[{opt['key'].upper()}] {opt['label']}" for opt in self.options])
-      option_text += ' | [Q] Exit'
+      for opt in self.options:
+        print(self.term.white(f"  [{opt['key'].upper()}] {opt['label']}"))
+      print(self.term.white(f"  [Q] Exit"))
     else:
-      option_text = '[Q] Exit'
-    print(self.term.white(f'  {option_text}'))
+      print(self.term.white('  [Q] Exit'))
     print(self.term.bold_cyan('=' * 60))
   
   def handleExit(self, key):

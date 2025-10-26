@@ -2,31 +2,52 @@ import time
 import random
 
 class Enemy:
-  def __init__(self, hp, attack, defense, name, position, lines, level=1, isBoss=False):
+  def __init__(self, position, lines, level=1, isBoss=False):
     self.enemyPosition = position
     self.level = level
     self.isBoss = isBoss
-    
-    if isBoss:
-      self.hp = (hp + (level - 1) * 5) * 3
-      self.maxHp = self.hp
-      self.attack = (attack + (level - 1) * 2) * 2
-      self.defense = (defense + (level - 1) * 1) * 2
-      self.name = name + ' (BOSS)'
-      self.goldDrop = random.randint(level * 50, level * 100)
-      self.xpDrop = random.randint(level * 100, level * 200)
-    else:
-      self.hp = hp + (level - 1) * 5
-      self.maxHp = self.hp
-      self.attack = attack + (level - 1) * 2
-      self.defense = defense + (level - 1) * 1
-      self.name = name
-      self.goldDrop = random.randint(level * 5, level * 15)
-      self.xpDrop = random.randint(level * 10, level * 25)
-    
-    self.id = random.randint(0, 1000000)
-    self.isInCombat = False
     self.lines = lines
+    self.isInCombat = False
+    self.id = random.randint(0, 1000000)
+    
+    if not hasattr(self, 'base_hp'):
+      self.base_hp = 10
+    if not hasattr(self, 'base_attack'):
+      self.base_attack = 5
+    if not hasattr(self, 'base_defense'):
+      self.base_defense = 2
+    if not hasattr(self, 'name'):
+      self.name = "Enemy"
+    
+    self._calculate_stats()
+    
+    # Drops padrão
+    self._calculate_drops()
+    self.item_drops = []  # Lista de possíveis items com chance
+  
+  def _calculate_stats(self):
+    """Calcula os stats baseado no level e se é boss"""
+    if self.isBoss:
+      self.hp = (self.base_hp + (self.level - 1) * 5) * 3
+      self.maxHp = self.hp
+      self.attack = (self.base_attack + (self.level - 1) * 2) * 2
+      self.defense = (self.base_defense + (self.level - 1) * 1) * 2
+      if not self.name.endswith('(BOSS)'):
+        self.name = self.name + ' (BOSS)'
+    else:
+      self.hp = self.base_hp + (self.level - 1) * 5
+      self.maxHp = self.hp
+      self.attack = self.base_attack + (self.level - 1) * 2
+      self.defense = self.base_defense + (self.level - 1) * 1
+  
+  def _calculate_drops(self):
+    """Calcula os drops baseado no level e se é boss"""
+    if self.isBoss:
+      self.goldDrop = random.randint(self.level * 50, self.level * 100)
+      self.xpDrop = random.randint(self.level * 100, self.level * 200)
+    else:
+      self.goldDrop = random.randint(self.level * 5, self.level * 15)
+      self.xpDrop = random.randint(self.level * 10, self.level * 25)
 
   def moveEnemy(self, boardWidth, boardHeight, lines):
     if self.isInCombat == False:
@@ -121,6 +142,21 @@ class Enemy:
 
   def removeEnemy(self, lines):
     lines[self.enemyPosition[0]][self.enemyPosition[1]] = '.'
+  
+  def get_drops(self):
+    """Retorna os drops do inimigo (gold, xp e items)"""
+    drops = {
+      'gold': self.goldDrop,
+      'xp': self.xpDrop,
+      'items': []
+    }
+    
+    # Calcular drops de items baseado em chance
+    for item_drop in self.item_drops:
+      if random.random() < item_drop['chance']:
+        drops['items'].append(item_drop['item'])
+    
+    return drops
 
   def setDefense(self, defense):
     self.defense = defense

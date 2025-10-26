@@ -27,11 +27,17 @@ class CombatUI:
         self.enemy.setIsInCombat(False)
         
         if self.player.getHp() > 0:
-            goldEarned = self.enemy.getGoldDrop()
-            xpEarned = self.enemy.getXpDrop()
-            self.player.addGold(goldEarned)
-            self.player.addXp(xpEarned)
-            print(self.term.bold_yellow("\nYou earned " + str(goldEarned) + " gold and " + str(xpEarned) + " XP!"))
+            drops = self.enemy.get_drops()
+            self.player.addGold(drops['gold'])
+            self.player.addXp(drops['xp'])
+            
+            print(self.term.bold_yellow("\nYou earned " + str(drops['gold']) + " gold and " + str(drops['xp']) + " XP!"))
+            
+            if drops['items']:
+                for item in drops['items']:
+                    self.player.addToInventory(item)
+                    print(self.term.bold_green("You got: " + item['name'] + "!"))
+            
             time.sleep(2)
 
     def player_turn(self):

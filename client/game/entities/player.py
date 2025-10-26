@@ -2,6 +2,7 @@ import json
 import random
 from engine.core.player import Player as BasePlayer
 from game.helper import blockers
+from game.mechanics.farm import Farm
 
 class Player(BasePlayer):
   """MMO Player - extends engine Player with MMO-specific features"""
@@ -45,6 +46,14 @@ class Player(BasePlayer):
     # MMO-specific: Properties (houses, farms, etc)
     self.property = []
     self.currentMap = 'dungeon'
+    
+    # MMO-specific: Farm system
+    self.farm = Farm(self)
+    
+    # Testing: Add mushroom seed to inventory
+    from game.items.materials import seeds
+    mushroom_seed = next(s for s in seeds if s['name'] == 'Mushroom Seed')
+    self.inventory.append(mushroom_seed)
 
   # ==================== MMO-Specific ====================
   

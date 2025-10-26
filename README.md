@@ -185,6 +185,13 @@ Planned features and improvements for future versions:
 - Skill points earned through leveling
 - Ultimate abilities unlocked at higher levels
 
+### Enemy Skills System
+- Enemies can have unique skills and abilities
+- Status effects (e.g., Snake poison - deals damage over time each turn)
+- Different enemy types with distinct skill sets
+- Boss enemies with powerful signature abilities
+- Skill animations and visual effects in combat UI
+
 ### Level Up System Enhancement
 - Interactive level-up screen with stat allocation
 - Choice between different upgrade paths

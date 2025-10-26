@@ -8,7 +8,6 @@ from game.entities.enemy import Enemy
 from game.ui.combatui import CombatUI
 from game.ui.inventoryui import InventoryUi
 from game.server import Server
-from game.mechanics.farm import farm
 import socketio
 import time
 
@@ -16,10 +15,6 @@ def main():
   # Initialize terminal and game client
   term = Terminal()
   client = GameClient()
-  
-  # Initialize game systems
-  # farm = Farm()
-  # client.registerSystem('farm', farm)
   
   # Initialize network
   players = []

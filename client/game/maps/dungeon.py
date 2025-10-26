@@ -154,20 +154,28 @@ class Dungeon(Map):
     
     return None
   def createRandomEnemies(self, amount):
+    from game.entities.enemies import Snake, Goblin
+    
     if self.isBossStage():
-      # Boss room: spawn boss + random minions
       numMinions = random.randint(2, 5)
       
-      # Spawn boss
-      self.enemies.append(Enemy(20, 10, 5, 'Shadow Lord', [random.randint(0, self.windowHeight-1), random.randint(0, self.windowWidth-1)], self.lines, self.currentLevel, isBoss=True))
+      boss = Enemy([random.randint(0, self.windowHeight-1), random.randint(0, self.windowWidth-1)], self.lines, self.currentLevel, isBoss=True)
+      boss.name = 'Shadow Lord'
+      boss.base_hp = 20
+      boss.base_attack = 10
+      boss.base_defense = 5
+      boss._calculate_stats()
+      self.enemies.append(boss)
       
-      # Spawn minions
       for i in range(numMinions):
-        self.enemies.append(Enemy(10, 5, 2, 'Minion', [random.randint(0, self.windowHeight-1), random.randint(0, self.windowWidth-1)], self.lines, self.currentLevel))
+        enemy_type = random.choice([Snake, Goblin])
+        pos = [random.randint(0, self.windowHeight-1), random.randint(0, self.windowWidth-1)]
+        self.enemies.append(enemy_type(pos, self.lines, self.currentLevel))
     else:
-      # Normal room
       for i in range(amount):
-        self.enemies.append(Enemy(10, 5, 2, 'Snake', [random.randint(0, self.windowHeight-1), random.randint(0, self.windowWidth-1)], self.lines, self.currentLevel))
+        enemy_type = random.choice([Snake, Goblin])
+        pos = [random.randint(0, self.windowHeight-1), random.randint(0, self.windowWidth-1)]
+        self.enemies.append(enemy_type(pos, self.lines, self.currentLevel))
 
   def createRandomChests(self, amount):
     for i in range(amount):
