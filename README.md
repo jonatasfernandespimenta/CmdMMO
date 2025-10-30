@@ -246,7 +246,7 @@ Planned features and improvements for future versions:
 - ✅ Property ownership requirement for farm access
 - 🔄 Irrigation and fertilizer systems for better yields (Coming soon)
 - 🔄 Rare seed drops from enemies and chests (Coming soon)
-- 🔄 Trade or sell harvested crops to merchants (Coming soon)
+- ✅ Trade or sell harvested crops to merchants
 
 ### Ranking System
 - Player progression tracked through rank tiers (gold, phase, level)

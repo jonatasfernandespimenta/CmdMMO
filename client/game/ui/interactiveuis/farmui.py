@@ -12,12 +12,12 @@ class FarmUI:
     self.id = 'farm_plot_1'
     self.player = player
     self.farm = player.farm
+    self.term = term
     
-    self.ui = InteractionUI(player, term, {
-      'art': farm_house,
-      'message': 'Welcome to your farm!',
-      'show_gold': False,
-      'options': [
+    # Build options based on ownership
+    options = []
+    if self.checkIfPlayerOwnsFarm():
+      options = [
         {
           'key': '1',
           'label': 'View Silo',
@@ -39,6 +39,12 @@ class FarmUI:
           'action': self.storeSeeds
         }
       ]
+    
+    self.ui = InteractionUI(player, term, {
+      'art': farm_house,
+      'message': 'Welcome to your farm!' if self.checkIfPlayerOwnsFarm() else 'You need to buy this farm first!',
+      'show_gold': False,
+      'options': options
     })
 
   def viewSilo(self):
@@ -188,10 +194,4 @@ class FarmUI:
   
   def open(self):
     """Open the farm UI"""
-    if not self.checkIfPlayerOwnsFarm():
-      # Player doesn't own the farm, show different message
-      self.ui.message = 'You need to buy this farm first!'
-    else:
-      self.ui.message = 'Welcome to your farm!'
-    
     self.ui.open()
