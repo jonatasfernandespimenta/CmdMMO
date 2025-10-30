@@ -42,6 +42,10 @@ class Player(BasePlayer):
     self.attack = classStats['attack']
     self.defense = classStats['defense']
     self.luck = classStats['luck']
+
+    ## MMO-specific: Rank System
+    self.maxDungeonLevel = 1
+    self.maxGoldEarned = 0
     
     # MMO-specific: Properties (houses, farms, etc)
     self.property = []

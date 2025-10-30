@@ -88,8 +88,8 @@ class AlchemistUI:
       print(f"Not enough gold! You have {self.player.getGold()}, need 100.")
       self.term.inkey(timeout=2)
       return
-    
-    self.player.addGold(-100)
+
+    self.player.removeGold(100)
     small_potion = next(p for p in potions if p['name'] == 'Small Healing Potion')
     self.player.addToInventory(small_potion)
     print("Purchased Small Health Potion for 100 gold!")
@@ -101,7 +101,7 @@ class AlchemistUI:
       self.term.inkey(timeout=2)
       return
     
-    self.player.addGold(-200)
+    self.player.removeGold(200)
     medium_potion = next(p for p in potions if p['name'] == 'Medium Healing Potion')
     self.player.addToInventory(medium_potion)
     print("Purchased Medium Health Potion for 200 gold!")

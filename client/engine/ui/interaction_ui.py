@@ -100,7 +100,7 @@ class InteractionUI:
       return
     
     # Deduct gold
-    self.player.addGold(-item['price'])
+    self.player.removeGold(item['price'])
     
     # Mark as owned
     item['owned'] = True

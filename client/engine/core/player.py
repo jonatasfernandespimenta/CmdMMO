@@ -42,6 +42,9 @@ class Player:
     self.maxHp = 100
     self.attack = 10
     self.defense = 5
+
+    # Rank system
+    self.maxGoldEarned = 0
     
     # Level system
     self.xp = 0
@@ -235,7 +238,12 @@ class Player:
     return self.gold
   
   def addGold(self, amount: int):
+    self.maxGoldEarned = max(self.maxGoldEarned, self.gold + amount)
     self.gold += amount
+
+  def removeGold(self, amount: int):
+    self.maxGoldEarned = max(0, self.maxGoldEarned - amount)
+    self.gold = max(0, self.gold - amount)
   
   # ==================== Notifications ====================
   
