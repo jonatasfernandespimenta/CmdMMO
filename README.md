@@ -248,14 +248,13 @@ Planned features and improvements for future versions:
 - 🔄 Rare seed drops from enemies and chests (Coming soon)
 - ✅ Trade or sell harvested crops to merchants
 
-### Ranking System
-- Player progression tracked through rank tiers (gold, phase, level)
-- Gold rank representing overall achievement milestones
-- Phase system for dividing progression into distinct stages
-- Level tracking within each phase
+### ✅ Ranking System
+- ✅ Player progression tracked through rank tiers (gold, phase, level)
+- ✅ Gold rank representing overall achievement milestones
+- ✅ Phase system for dividing progression into distinct stages
+- ✅ Level tracking within each phase
 - Rank-based rewards and unlocks
-- Leaderboards showing top-ranked players
-- Visual rank indicators in player display
+- ✅ Leaderboards showing top-ranked players
 
 ### Overworld Map System
 - Open-world map with exploration and travel mechanics

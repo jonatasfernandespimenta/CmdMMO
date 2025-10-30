@@ -2,7 +2,7 @@ var express = require('express'),
     app = express(), 
     server = require('http').createServer(app)
 
-const { createPlayer, updatePlayer, getPlayerById, getPlayerByName, getAllPlayers } = require('./database');
+const { createPlayer, updatePlayer, getPlayerById, getPlayerByName, getAllPlayers, getTop3ByGold, getTop3ByLevel, getTop3ByDungeonLevel, getAllByGold, getAllByLevel, getAllByDungeonLevel } = require('./database');
 
 app.use(express.json());
 
@@ -87,6 +87,64 @@ app.get('/api/player/:id', (req, res) => {
       return res.status(404).json({ error: 'Player not found' });
     }
     res.json(player);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// GET - Top 3 players por gold
+app.get('/api/leaderboard/gold', (req, res) => {
+  try {
+    const top3 = getTop3ByGold.all();
+    res.json(top3);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// GET - Top 3 players por level
+app.get('/api/leaderboard/level', (req, res) => {
+  try {
+    const top3 = getTop3ByLevel.all();
+    res.json(top3);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// GET - Top 3 players por dungeon level
+app.get('/api/leaderboard/dungeon', (req, res) => {
+  try {
+    const top3 = getTop3ByDungeonLevel.all();
+    res.json(top3);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// GET - Full rankings for rank board
+app.get('/api/rankings/gold', (req, res) => {
+  try {
+    const rankings = getAllByGold.all();
+    res.json(rankings);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.get('/api/rankings/level', (req, res) => {
+  try {
+    const rankings = getAllByLevel.all();
+    res.json(rankings);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.get('/api/rankings/dungeon', (req, res) => {
+  try {
+    const rankings = getAllByDungeonLevel.all();
+    res.json(rankings);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

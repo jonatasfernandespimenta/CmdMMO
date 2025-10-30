@@ -1,13 +1,16 @@
 from engine.maps.map import Map
-from game.arts.buildings import house, farm_house_map_version, mushroom_house
+from game.arts.buildings import house, farm_house_map_version, mushroom_house, rank_board
 from game.maps.map_transition import CityToDungeonTransition
 from game.ui.interactiveuis.landlord_ui import LandlordUI
+from game.ui.interactiveuis.yago_ui import YagoUI
+from game.ui.interactiveuis.rank_ui import RankUI
 
 class City(Map):
   def __init__(self, dungeon_map=None):
     super().__init__(60, 30)
     self.buildings = []
     self.portalPosition = [self.windowHeight // 2, self.windowWidth - 1]
+    self.yagoPosition = [0, self.windowWidth - 1]
     self.dungeon_map = dungeon_map
 
   def calculateDoorPositions(self, art):
@@ -30,15 +33,25 @@ class City(Map):
       from game.ui.interactiveuis.alchemist_ui import AlchemistUI
       alchemistUi = AlchemistUI(player, term)
       alchemistUi.open()
+    elif buildingName == 'Yago':
+      yagoUi = YagoUI(player, term)
+      yagoUi.open()
+    elif buildingName == 'RankBoard':
+      rankUi = RankUI(player, term)
+      rankUi.open()
 
   def generateHouses(self):
     houseArt = self.convertArtToBoardItem(house)
     farmHouseArt = self.convertArtToBoardItem(farm_house_map_version)
     mushroomHouseArt = self.convertArtToBoardItem(mushroom_house)
+    rankBoardArt = self.convertArtToBoardItem(rank_board)
 
     houseDoorPositions = self.calculateDoorPositions(houseArt)
     farmHouseDoorPositions = self.calculateDoorPositions(farmHouseArt)
     mushroomHouseDoorPositions = self.calculateDoorPositions(mushroomHouseArt)
+    
+    # Rank board collision point (center of the board)
+    rankBoardPosition = (7, 47)  # Position to interact with rank board
 
     doorPositions = [(8 + door[0], 8 + door[1]) for door in houseDoorPositions]
     farmHousePositions = [(20 + door[0], 30 + door[1]) for door in farmHouseDoorPositions]
@@ -47,8 +60,15 @@ class City(Map):
     self.buildings.append({ 'name': 'LandLordHouse', 'startY': 8, 'startX': 8, 'art': houseArt, 'onEnter': self.onEnterBuilding, 'doorPositions': doorPositions })
     self.buildings.append({ 'name': 'FarmHouse', 'startY': 20, 'startX': 30, 'art': farmHouseArt, 'onEnter': self.onEnterBuilding, 'doorPositions': farmHousePositions })
     self.buildings.append({ 'name': 'AlchemistHouse', 'startY': 20, 'startX': 8, 'art': mushroomHouseArt, 'onEnter': self.onEnterBuilding, 'doorPositions': mushroomHousePositions })
+    self.buildings.append({ 'name': 'RankBoard', 'startY': 5, 'startX': 45, 'art': rankBoardArt, 'onEnter': self.onEnterBuilding, 'doorPositions': [rankBoardPosition] })
 
   def handleCollisions(self, player, draw, term):
+    # Check Yago collision
+    if player.getPlayerPosition() == self.yagoPosition:
+      self.onEnterBuilding('Yago', player, term)
+      return
+    
+    # Check building collisions
     for building in self.buildings:
       for doorPosition in building['doorPositions']:
         if player.getPlayerPosition() == list(doorPosition):
@@ -71,6 +91,7 @@ class City(Map):
     self.initBuildings()
 
     self.lines[self.portalPosition[0]][self.portalPosition[1]] = 'D'
+    self.lines[self.yagoPosition[0]][self.yagoPosition[1]] = 'Y'
 
     return self.lines
 
@@ -85,6 +106,8 @@ class City(Map):
           line += term.bold_cyan(char)
         elif char == 'D':
           line += term.bold_blue_reverse(char)
+        elif char == 'Y':
+          line += term.bold_magenta(char)
         else:
           line += term.green(char)
       print(line)
@@ -105,6 +128,10 @@ class City(Map):
     """Always draw dungeon entrance portal"""
     self.lines[self.portalPosition[0]][self.portalPosition[1]] = 'D'
   
+  def drawYago(self):
+    """Always draw Yago"""
+    self.lines[self.yagoPosition[0]][self.yagoPosition[1]] = 'Y'
+  
   def redrawBuildings(self):
     """Redraw all buildings (in case they were overwritten by player movement)"""
     for building in self.buildings:
@@ -116,6 +143,7 @@ class City(Map):
     
     self.redrawBuildings()
     self.drawPortal()
+    self.drawYago()
     
     for player in players:
       player.drawPlayer()

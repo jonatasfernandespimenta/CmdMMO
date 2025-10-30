@@ -35,11 +35,58 @@ const getPlayerById = db.prepare('SELECT * FROM Player WHERE id = ?');
 const getPlayerByName = db.prepare('SELECT * FROM Player WHERE name = ?');
 const getAllPlayers = db.prepare('SELECT * FROM Player');
 
+// Leaderboard queries
+const getTop3ByGold = db.prepare(`
+  SELECT id, name, class, maxGold, maxLevelReached, maxDungeonLevel
+  FROM Player 
+  ORDER BY maxGold DESC 
+  LIMIT 3
+`);
+
+const getTop3ByLevel = db.prepare(`
+  SELECT id, name, class, maxLevelReached, maxGold, maxDungeonLevel
+  FROM Player 
+  ORDER BY maxLevelReached DESC 
+  LIMIT 3
+`);
+
+const getTop3ByDungeonLevel = db.prepare(`
+  SELECT id, name, class, maxDungeonLevel, maxLevelReached, maxGold
+  FROM Player 
+  ORDER BY maxDungeonLevel DESC 
+  LIMIT 3
+`);
+
+// Full ranking queries (for rank board UI)
+const getAllByGold = db.prepare(`
+  SELECT id, name, class, maxGold as value
+  FROM Player 
+  ORDER BY maxGold DESC
+`);
+
+const getAllByLevel = db.prepare(`
+  SELECT id, name, class, maxLevelReached as value
+  FROM Player 
+  ORDER BY maxLevelReached DESC
+`);
+
+const getAllByDungeonLevel = db.prepare(`
+  SELECT id, name, class, maxDungeonLevel as value
+  FROM Player 
+  ORDER BY maxDungeonLevel DESC
+`);
+
 module.exports = {
   db,
   createPlayer,
   updatePlayer,
   getPlayerById,
   getPlayerByName,
-  getAllPlayers
+  getAllPlayers,
+  getTop3ByGold,
+  getTop3ByLevel,
+  getTop3ByDungeonLevel,
+  getAllByGold,
+  getAllByLevel,
+  getAllByDungeonLevel
 };

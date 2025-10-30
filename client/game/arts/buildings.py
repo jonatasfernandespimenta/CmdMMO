@@ -19,3 +19,8 @@ mushroom_house = r"""
 ....(_)
 ....(H)
 """
+
+rank_board = r"""
+█████
+|   |
+"""
