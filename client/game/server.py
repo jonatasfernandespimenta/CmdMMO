@@ -20,15 +20,23 @@ class RemotePlayer:
   def setPlayerPosition(self, position):
     self.playerPosition = position
   
+  def setBoard(self, lines, windowWidth, windowHeight):
+    """Update board reference when changing maps"""
+    self.lines = lines
+    self.windowWidth = windowWidth
+    self.windowHeight = windowHeight
+  
   def drawPlayer(self):
     """Draw remote player on the map"""
-    if (0 <= self.playerPosition[0] < len(self.lines) and 
+    if (self.lines and 
+        0 <= self.playerPosition[0] < len(self.lines) and 
         0 <= self.playerPosition[1] < len(self.lines[0])):
       self.lines[self.playerPosition[0]][self.playerPosition[1]] = 'P'
   
   def removePlayer(self):
     """Remove remote player from the map"""
-    if (0 <= self.playerPosition[0] < len(self.lines) and 
+    if (self.lines and
+        0 <= self.playerPosition[0] < len(self.lines) and 
         0 <= self.playerPosition[1] < len(self.lines[0])):
       self.lines[self.playerPosition[0]][self.playerPosition[1]] = '.'
 

@@ -22,7 +22,6 @@ def main():
   client = GameClient()
   
   # Initialize network
-  players = []
   enemies = []
   chests = []
   
@@ -41,7 +40,8 @@ def main():
   
   cityInfo = [city.getLines(), city.getWindowWidth(), city.getWindowHeight()]
   
-  server = Server(sio, 'localhost', 3001, players, cityInfo)
+  # Use client.players directly instead of a separate list
+  server = Server(sio, 'localhost', 3001, client.players, cityInfo)
   
   # Player creation UI
   with term.fullscreen(), term.cbreak(), term.hidden_cursor():
@@ -115,10 +115,7 @@ def main():
     levelUpUI = LevelUpUI(player, term)
     partyUI = PartyUI(player, party, term)
 
-    if player not in players:
-      players.append(player)
-
-    # Setup game client
+    # Setup game client (this will add player to client.players)
     client.setCurrentMap(city)
     client.setPlayer(player)
     client.sio = sio  # Store sio for network updates

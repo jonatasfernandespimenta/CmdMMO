@@ -24,7 +24,18 @@ class GameClient:
   
   def setCurrentMap(self, map_obj):
     """Set the current active map"""
+    old_map = self.current_map
     self.current_map = map_obj
+    
+    # Update board reference for all remote players when changing maps
+    if old_map != map_obj and map_obj:
+      for player in self.players:
+        if hasattr(player, 'setBoard'):
+          player.setBoard(
+            map_obj.getLines(), 
+            map_obj.getWindowWidth(), 
+            map_obj.getWindowHeight()
+          )
   
   def setPlayer(self, player):
     """Set the main player"""
@@ -53,7 +64,7 @@ class GameClient:
       transition = self.current_map.checkPortalTransition(self.player)
       if transition:
         transition.execute(self.player, self.term)
-        self.current_map = transition.getDestinationMap()
+        self.setCurrentMap(transition.getDestinationMap())  # Use setter to update remote players
       
       # Handle collisions
       self.current_map.handleCollisions(self.player, self.draw, self.term)

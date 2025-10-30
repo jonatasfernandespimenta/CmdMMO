@@ -316,7 +316,7 @@ class PartyUI:
         target_player = filtered[self.selected_index]['playerId']
         self.party.invite_player(target_player)
         # Show confirmation (will be visible in notification)
-        self.player.setNotification(f'Invite sent to {target_player}')
+        self.player.showNotification(f'Invite sent to {target_player}')
     
     elif key.name == 'KEY_BACKSPACE' or key.name == 'KEY_DELETE':
       self.search_query = self.search_query[:-1]
@@ -341,7 +341,7 @@ class PartyUI:
       if 0 <= self.selected_index < len(pending):
         invite = pending[self.selected_index]
         self.party.accept_invite(invite['partyId'])
-        self.player.setNotification(f'Joined party led by {invite["leader"]}')
+        self.player.showNotification(f'Joined party led by {invite["leader"]}')
         self.is_open = False
     
     elif key.lower() == 'd':
@@ -350,12 +350,12 @@ class PartyUI:
       if 0 <= self.selected_index < len(pending):
         invite = pending[self.selected_index]
         self.party.decline_invite(invite['partyId'])
-        self.player.setNotification(f'Declined invite from {invite["leader"]}')
+        self.player.showNotification(f'Declined invite from {invite["leader"]}')
   
   def _handle_leave_input(self, key):
     """Handle input in leave party tab"""
     if key.name == 'KEY_ENTER':
       # Leave party
       self.party.leave_party()
-      self.player.setNotification('Left the party')
+      self.player.showNotification('Left the party')
       self.is_open = False

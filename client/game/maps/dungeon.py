@@ -139,6 +139,8 @@ class Dungeon(Map):
           line += term.bold_white(char)
         elif char == 'X':
           line += term.bold_cyan(char)
+        elif char == 'P':  # Remote player
+          line += term.bold_yellow(char)
         elif char == 'B':
           line += term.bold_red_reverse(char)
         elif char == 'E':
