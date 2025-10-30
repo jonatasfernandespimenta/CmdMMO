@@ -7,6 +7,8 @@ from game.maps.city import City
 from game.entities.enemy import Enemy
 from game.ui.combatui import CombatUI
 from game.ui.inventoryui import InventoryUi
+from game.ui.skillsui import SkillsUI
+from game.ui.levelup_ui import LevelUpUI
 from game.server import Server
 from game.api_client import APIClient
 import socketio
@@ -46,7 +48,7 @@ def main():
         'key': '1',
         'name': 'Rogue',
         'description': 'High attack & luck, low defense',
-        'stats': 'HP: 80 | Attack: 15 | Defense: 4 | Luck: 8',
+        'stats': 'HP: 80 | MP: 20 | ATK: 15 | DEF: 4 | LCK: 8',
         'color': 'bold_green',
         'id': 'rogue'
       },
@@ -54,7 +56,7 @@ def main():
         'key': '2',
         'name': 'Knight',
         'description': 'High HP & defense, balanced',
-        'stats': 'HP: 120 | Attack: 12 | Defense: 10 | Luck: 3',
+        'stats': 'HP: 120 | MP: 20 | ATK: 12 | DEF: 10 | LCK: 3',
         'color': 'bold_blue',
         'id': 'knight'
       },
@@ -62,7 +64,7 @@ def main():
         'key': '3',
         'name': 'Wizard',
         'description': 'Highest attack, low defense',
-        'stats': 'HP: 70 | Attack: 18 | Defense: 3 | Luck: 5',
+        'stats': 'HP: 70 | MP: 50 | ATK: 18 | DEF: 3 | LCK: 5',
         'color': 'bold_magenta',
         'id': 'wizard'
       }
@@ -102,6 +104,8 @@ def main():
 
     combatUI = CombatUI(player, enemies, client.draw, term)
     inventoryUI = InventoryUi(player, term)
+    skillsUI = SkillsUI(player, term)
+    levelUpUI = LevelUpUI(player, term)
 
     if player not in players:
       players.append(player)
@@ -131,8 +135,15 @@ def main():
         term.inkey()
         break
       
-      if player.getIsInventoryOpen():
+      # Check for pending level up first
+      if player.pendingLevelUp:
+        levelUpUI.show()
+        player.pendingLevelUp = False
+      elif player.getIsInventoryOpen():
         inventoryUI.draw()
+      elif player.getIsSkillsMenuOpen():
+        skillsUI.open()
+        player.setIsSkillsMenuOpen(False)  # Reset after closing
       else:
         client.draw()
       

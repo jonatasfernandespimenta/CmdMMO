@@ -72,9 +72,11 @@ class Dungeon(Map):
   def printPlayerInfo(self, player, term):
     print(term.bold_white('=' * self.windowWidth))
     hp_color = term.green if player.getHp() > player.getMaxHp() * 0.5 else term.yellow if player.getHp() > player.getMaxHp() * 0.2 else term.red
+    mp_color = term.cyan if player.getMP() > player.maxMp * 0.5 else term.yellow if player.getMP() > player.maxMp * 0.2 else term.red
+    
     print(term.cyan('Name: ') + term.bold(player.getName()) + term.cyan(' [') + term.magenta(player.getPlayerClass()) + term.cyan('] Lvl: ') + term.bold_green(str(player.getLevel())))
-    print(term.cyan('HP: ') + hp_color(str(player.getHp()) + '/' + str(player.getMaxHp())) + term.cyan(' | XP: ') + term.green(str(player.getXp()) + '/' + str(player.getXpToNextLevel())))
-    print(term.cyan('ATK: ') + term.yellow(str(player.getAttack())) + term.cyan(' | DEF: ') + term.blue(str(player.getDefense())) + term.cyan(' | Gold: ') + term.yellow(str(player.getGold())) + term.cyan(' | Stage: ') + term.magenta(str(self.currentLevel)))
+    print(term.cyan('HP: ') + hp_color(str(player.getHp()) + '/' + str(player.getMaxHp())) + term.cyan(' | MP: ') + mp_color(str(player.getMP()) + '/' + str(player.maxMp)) + term.cyan(' | XP: ') + term.green(str(player.getXp()) + '/' + str(player.getXpToNextLevel())))
+    print(term.cyan('ATK: ') + term.yellow(str(player.getAttack())) + term.cyan(' | DEF: ') + term.blue(str(player.getDefense())) + term.cyan(' | LCK: ') + term.magenta(str(player.getLuck())) + term.cyan(' | Gold: ') + term.yellow(str(player.getGold())) + term.cyan(' | Stage: ') + term.magenta(str(self.currentLevel)))
     notification = player.getNotification()
     if notification:
       print(term.bold_green(notification))

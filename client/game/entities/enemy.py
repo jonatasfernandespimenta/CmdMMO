@@ -1,9 +1,13 @@
 import time
 import random
 from game.mechanics.combat import CombatSystem
+from game.entities.combat_entity import CombatEntity
 
-class Enemy:
-  def __init__(self, position, lines, level=1, isBoss=False, elementType=None, term=None,):
+class Enemy(CombatEntity):
+  def __init__(self, position, lines, level=1, isBoss=False, elementType=None, term=None, mp=0, skills=None):
+    # Initialize combat entity
+    CombatEntity.__init__(self)
+    
     self.enemyPosition = position
     self.level = level
     self.isBoss = isBoss
@@ -12,11 +16,11 @@ class Enemy:
     self.id = random.randint(0, 1000000)
     self.term = term
     self.elementType = elementType
-    
-    # Combat system (will be initialized if term is provided)
-    if term:
-      self.combat = CombatSystem(term)
-    
+
+    # Combat system - initialize even without term for now
+    self.combat = CombatSystem(term) if term else None
+    self.skills = skills if skills else []
+
     if not hasattr(self, 'base_hp'):
       self.base_hp = 10
     if not hasattr(self, 'base_attack'):
@@ -25,8 +29,12 @@ class Enemy:
       self.base_defense = 2
     if not hasattr(self, 'base_luck'):
       self.base_luck = 2
+    if not hasattr(self, 'base_mp'):
+      self.base_mp = 10
     if not hasattr(self, 'name'):
       self.name = "Enemy"
+    if not hasattr(self, 'skills'):
+      self.skills = []  # List of skill IDs this enemy can use
     
     self._calculate_stats()
     
@@ -42,6 +50,8 @@ class Enemy:
       self.attack = (self.base_attack + (self.level - 1) * 2) * 2
       self.defense = (self.base_defense + (self.level - 1) * 1) * 2
       self.luck = (self.base_luck + (self.level - 1)) * 2
+      self.mp = (self.base_mp + (self.level - 1) * 3) * 2
+      self.maxMp = self.mp
       if not self.name.endswith('(BOSS)'):
         self.name = self.name + ' (BOSS)'
     else:
@@ -50,7 +60,12 @@ class Enemy:
       self.attack = self.base_attack + (self.level - 1) * 2
       self.defense = self.base_defense + (self.level - 1) * 1
       self.luck = self.base_luck + (self.level - 1)
+      self.mp = self.base_mp + (self.level - 1) * 3
+      self.maxMp = self.mp
   
+  # Combat methods (getStun, setStun, DoT methods) are inherited from CombatEntity
+
+
   def _calculate_drops(self):
     """Calcula os drops baseado no level e se é boss"""
     if self.isBoss:
@@ -119,23 +134,7 @@ class Enemy:
     else:
       lines[self.enemyPosition[0]][self.enemyPosition[1]] = 'E'
 
-  def getHp(self):
-    return self.hp
-  
-  def getAttack(self):
-    return self.attack
-  
-  def getDefense(self):
-    return self.defense
-  
-  def getLuck(self):
-    return self.luck
-  
-  def setHp(self, hp):
-    self.hp = hp
-
-  def setAttack(self, attack):
-    self.attack = attack
+  # getHp, setHp, getMP, setMP, getAttack, setAttack, getDefense, getLuck are inherited from CombatEntity
 
   def getID(self):
     return self.id
@@ -149,8 +148,11 @@ class Enemy:
   def getXpDrop(self):
     return self.xpDrop
   
-  def getMaxHp(self):
-    return self.maxHp
+  # getMaxHp, getMP, getMaxMP, setMP are inherited from CombatEntity
+  
+  def getSkills(self):
+    """Get list of skills this enemy can use"""
+    return self.skills
   
   def getName(self):
     return self.name
@@ -176,9 +178,30 @@ class Enemy:
     
     return drops
 
-  def setDefense(self, defense):
-    self.defense = defense
+  # setDefense is inherited from CombatEntity
 
   def attackPlayer(self, player):
     """Attack player using combat system if available"""
-    self.combat.attack(self, player, "The enemy", "you")
+    if self.combat:
+      skillId = None
+      
+      # 40% chance to use a skill if enemy has skills and MP
+      if self.skills and len(self.skills) > 0 and random.random() < 0.4:
+        # Try to find a skill we can afford
+        from game.skills.fighting_abilities import fighting_abilities
+        affordable_skills = []
+        
+        for skill_id in self.skills:
+          skill = next((s for s in fighting_abilities if s["id"] == skill_id), None)
+          if skill and self.mp >= skill["mpCost"]:
+            affordable_skills.append(skill_id)
+        
+        # Pick a random affordable skill
+        if affordable_skills:
+          skillId = random.choice(affordable_skills)
+      
+      self.combat.attack(self, player, "The enemy", "you", skillId)
+    else:
+      # Fallback if no combat system available
+      damage = max(1, self.getAttack() - player.getDefense())
+      player.setHp(player.getHp() - damage)

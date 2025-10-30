@@ -4,8 +4,9 @@ from engine.core.player import Player as BasePlayer
 from game.helper import blockers
 from game.mechanics.farm import Farm
 from game.mechanics.combat import CombatSystem
+from game.entities.combat_entity import CombatEntity
 
-class Player(BasePlayer):
+class Player(BasePlayer, CombatEntity):
   """MMO Player - extends engine Player with MMO-specific features"""
   
   CLASSES = {
@@ -14,34 +15,41 @@ class Player(BasePlayer):
       'attack': 15,
       'defense': 4,
       'luck': 8,
-      'elementType': 'poison'
+      'elementType': 'poison',
+      'mp': 200
     },
     'knight': {
       'hp': 120,
       'attack': 12,
       'defense': 10,
       'luck': 3,
-      'elementType': 'earth'
+      'elementType': 'earth',
+      'mp': 20
     },
     'ice_wizard': {
       'hp': 70,
       'attack': 18,
       'defense': 3,
       'luck': 5,
-      'elementType': 'ice'
+      'elementType': 'ice',
+      'mp': 50
     },
     'fire_mage': {
       'hp': 75,
       'attack': 20,
       'defense': 2,
       'luck': 4,
-      'elementType': 'fire'
+      'elementType': 'fire',
+      'mp': 60
     },
   }
 
   def __init__(self, lines, windowWidth, windowHeight, playerPosition, name, playerClass, term, api_client=None):
-    # Initialize base player
-    super().__init__(lines, windowWidth, windowHeight, playerPosition, name, term, blockers)
+    # Initialize base player (movement, inventory, etc)
+    BasePlayer.__init__(self, lines, windowWidth, windowHeight, playerPosition, name, term, blockers)
+    
+    # Initialize combat entity (hp, mp, stun, DoT, etc)
+    CombatEntity.__init__(self)
     
     # MMO-specific: Player class system
     self.playerClass = playerClass.lower()
@@ -53,6 +61,14 @@ class Player(BasePlayer):
     self.attack = classStats['attack']
     self.defense = classStats['defense']
     self.luck = classStats['luck']
+    self.mp = classStats['mp']
+    self.maxMp = classStats['mp']
+    self.skillPoints = 5  # Skill points to spend on abilities (starting with 5 for testing)
+
+    self.skills = []  # List of skill IDs the player has learned
+    self.skillLevels = {}  # Track level for each skill for scaling
+    self.isSkillsMenuOpen = False  # Skills menu state
+    self.pendingLevelUp = False  # Flag to show level up UI
 
     ## MMO-specific: Rank System
     self.maxDungeonLevel = 1
@@ -81,9 +97,7 @@ class Player(BasePlayer):
     """Get player class"""
     return self.playerClass.capitalize()
   
-  def getLuck(self):
-    """Get luck stat"""
-    return self.luck
+  # getLuck() is now inherited from CombatEntity
   
   def getElementType(self):
     """Get player's elemental type based on class"""
@@ -115,9 +129,22 @@ class Player(BasePlayer):
     super().movePlayer(network_callback)
   
   def levelUp(self):
-    """Override to add luck stat increase"""
+    """Override to add luck stat increase and trigger UI"""
     super().levelUp()  # Call base levelUp
     self.luck += 1  # MMO-specific: increase luck
+
+    skillPointsAmount = 1 + (self.level // 5)
+
+    self.skillPoints += skillPointsAmount  # MMO-specific: gain skill point
+    self.upgradeMP(5)  # MMO-specific: increase MP
+    
+    # Upgrade all learned skills
+    for skillId in self.skills:
+      if skillId not in self.skillLevels:
+        self.skillLevels[skillId] = 1
+      self.skillLevels[skillId] += 1
+    
+    self.pendingLevelUp = True  # Set flag to show level up UI
     self._syncStatsToServer()  # Sync max level to server
 
   def interactWithChest(self, chest):
@@ -126,8 +153,44 @@ class Player(BasePlayer):
       loot = chest.openChest()
       self.addToInventory(loot)  # Use base class method
 
-  # ==================== Combat ====================
+  def addSkill(self, skillId):
+    """Add a new skill to the player's skill list"""
+    if skillId not in self.skills:
+      self.skills.append(skillId)
+      self.skillLevels[skillId] = 1  # Start at level 1
   
+  def getIsSkillsMenuOpen(self):
+    """Check if skills menu is open"""
+    return self.isSkillsMenuOpen
+  
+  def setIsSkillsMenuOpen(self, isOpen):
+    """Set skills menu state"""
+    self.isSkillsMenuOpen = isOpen
+  
+  def getSkillLevel(self, skillId):
+    """Get the level of a specific skill"""
+    return self.skillLevels.get(skillId, 1)
+  
+  def getScaledSkillDamage(self, skillId, baseDamage):
+    """Get scaled damage for a skill based on its level"""
+    skillLevel = self.getSkillLevel(skillId)
+    # Each skill level adds 10% to base damage
+    return int(baseDamage * (1 + (skillLevel - 1) * 0.1))
+  
+  def getScaledSkillMpCost(self, skillId, baseMpCost):
+    """Get scaled MP cost for a skill based on its level"""
+    skillLevel = self.getSkillLevel(skillId)
+    # Each skill level adds 5% to MP cost (rounded up)
+    return int(baseMpCost * (1 + (skillLevel - 1) * 0.05))
+
+  # ==================== Combat ====================
+  # Combat methods (getStun, setStun, getMP, setMP, DoT methods) are inherited from CombatEntity
+  
+  def upgradeMP(self, amount):
+    """Increase max MP"""
+    self.maxMp += amount
+    self.mp = self.maxMp  # Refill MP when upgrading
+
   def collidedWithEnemy(self, enemies):
     """Check if player collided with any enemy"""
     for enemy in enemies:
@@ -147,7 +210,7 @@ class Player(BasePlayer):
     # Enemy counterattacks if still alive
     enemy.attackPlayer(self)
     return False
-  
+
   # ==================== Override Base Methods ====================
   
   def addGold(self, amount: int):

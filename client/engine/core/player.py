@@ -99,6 +99,11 @@ class Player:
     elif key == 'i':
       self.isInventoryOpen = not self.isInventoryOpen
     
+    elif key.lower() == 'k':
+      # Toggle skills menu if the player has this attribute (for MMO player)
+      if hasattr(self, 'isSkillsMenuOpen'):
+        self.isSkillsMenuOpen = not self.isSkillsMenuOpen
+    
     if newPlayerPosition != self.playerPosition:
       if network_callback:
         network_callback(newPlayerPosition)

@@ -8,6 +8,7 @@ fighting_abilities = [
     "duration": 0,
     "effectPerTurn": 0,
     "mpCost": 5,
+    "skillCost": 1,
     "classes": ["rogue"],
     "isMagical": False
   },
@@ -19,6 +20,7 @@ fighting_abilities = [
     "duration": 0,
     "effectPerTurn": 0,
     "mpCost": 12,
+    "skillCost": 2,
     "classes": ["rogue"],
     "isMagical": False
   },
@@ -30,6 +32,7 @@ fighting_abilities = [
     "duration": 0,
     "effectPerTurn": 0,
     "mpCost": 8,
+    "skillCost": 1,
     "classes": ["rogue"],
     "isMagical": False
   },
@@ -41,6 +44,7 @@ fighting_abilities = [
     "duration": 0,
     "effectPerTurn": 0,
     "mpCost": 20,
+    "skillCost": 3,
     "classes": ["rogue"],
     "isMagical": False
   },
@@ -52,6 +56,7 @@ fighting_abilities = [
     "duration": 0,
     "effectPerTurn": 0,
     "mpCost": 25,
+    "skillCost": 4,
     "classes": ["rogue"],
     "isMagical": False
   },
@@ -63,6 +68,7 @@ fighting_abilities = [
     "duration": 2,
     "effectPerTurn": 0,
     "mpCost": 15,
+    "skillCost": 3,
     "classes": ["rogue"],
     "isMagical": False
   },
@@ -74,6 +80,7 @@ fighting_abilities = [
     "duration": 3,
     "effectPerTurn": 8,
     "mpCost": 18,
+    "skillCost": 2,
     "classes": ["rogue"],
     "isMagical": False
   },
@@ -85,6 +92,7 @@ fighting_abilities = [
     "duration": 4,
     "effectPerTurn": 10,
     "mpCost": 22,
+    "skillCost": 3,
     "classes": ["rogue"],
     "isMagical": False
   },
@@ -97,6 +105,7 @@ fighting_abilities = [
     "duration": 0,
     "effectPerTurn": 0,
     "mpCost": 10,
+    "skillCost": 1,
     "classes": ["knight"],
     "isMagical": False
   },
@@ -108,6 +117,7 @@ fighting_abilities = [
     "duration": 0,
     "effectPerTurn": 0,
     "mpCost": 18,
+    "skillCost": 3,
     "classes": ["knight"],
     "isMagical": False
   },
@@ -119,6 +129,7 @@ fighting_abilities = [
     "duration": 0,
     "effectPerTurn": 0,
     "mpCost": 15,
+    "skillCost": 3,
     "classes": ["knight"],
     "isMagical": False
   },
@@ -130,6 +141,7 @@ fighting_abilities = [
     "duration": 0,
     "effectPerTurn": 0,
     "mpCost": 12,
+    "skillCost": 2,
     "classes": ["knight"],
     "isMagical": False
   },
@@ -141,6 +153,7 @@ fighting_abilities = [
     "duration": 0,
     "effectPerTurn": 0,
     "mpCost": 30,
+    "skillCost": 5,
     "classes": ["knight"],
     "isMagical": False
   },
@@ -152,6 +165,7 @@ fighting_abilities = [
     "duration": 0,
     "effectPerTurn": 0,
     "mpCost": 14,
+    "skillCost": 2,
     "classes": ["knight"],
     "isMagical": False
   },
@@ -163,6 +177,7 @@ fighting_abilities = [
     "duration": 3,
     "effectPerTurn": 7,
     "mpCost": 10,
+    "skillCost": 2,
     "classes": ["knight"],
     "isMagical": False
   },
@@ -174,6 +189,7 @@ fighting_abilities = [
     "duration": 0,
     "effectPerTurn": 0,
     "mpCost": 8,
+    "skillCost": 2,
     "classes": ["knight"],
     "isMagical": False
   },
@@ -186,6 +202,7 @@ fighting_abilities = [
     "duration": 3,
     "effectPerTurn": 5,
     "mpCost": 10,
+    "skillCost": 2,
     "classes": ["rogue", "mage"],
     "isMagical": True,
     "elementType": "poison"
@@ -198,6 +215,7 @@ fighting_abilities = [
     "duration": 2,
     "effectPerTurn": 4,
     "mpCost": 12,
+    "skillCost": 2,
     "classes": ["mage"],
     "isMagical": True,
     "elementType": "fire"
@@ -210,6 +228,7 @@ fighting_abilities = [
     "duration": 2,
     "effectPerTurn": 10,
     "mpCost": 8,
+    "skillCost": 2,
     "classes": ["mage"],
     "isMagical": True,
     "elementType": "ice"
@@ -222,6 +241,7 @@ fighting_abilities = [
     "duration": 0,
     "effectPerTurn": 0,
     "mpCost": 15,
+    "skillCost": 3,
     "classes": ["mage", "shaman"],
     "isMagical": True,
     "elementType": "earth"
@@ -234,6 +254,7 @@ fighting_abilities = [
     "duration": 0,
     "effectPerTurn": 0,
     "mpCost": 14,
+    "skillCost": 3,
     "classes": ["mage", "shaman"],
     "isMagical": True,
     "elementType": "electric"
@@ -246,6 +267,7 @@ fighting_abilities = [
     "duration": 3,
     "effectPerTurn": 0,
     "mpCost": 8,
+    "skillCost": 2,
     "classes": ["mage"],
     "isMagical": True,
     "elementType": "arcane",

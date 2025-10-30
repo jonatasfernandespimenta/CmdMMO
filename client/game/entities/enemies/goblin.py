@@ -5,9 +5,9 @@ from game.skills.fighting_abilities import fighting_abilities
 
 class Goblin(Enemy):
   def __init__(self, position, lines, level=1, term=None):
-    self.base_hp = 15
-    self.base_attack = 7
-    self.base_defense = 3
+    self.base_hp = 35
+    self.base_attack = 12
+    self.base_defense = 6
     self.name = "Goblin"
     
     super().__init__(position, lines, level, term=term)

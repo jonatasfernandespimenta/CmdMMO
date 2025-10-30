@@ -196,11 +196,11 @@ Planned features and improvements for future versions:
 - Boss enemies with powerful signature abilities
 - Skill animations and visual effects in combat UI
 
-### Level Up System Enhancement
-- Interactive level-up screen with stat allocation
-- Choice between different upgrade paths
-- Unlock new abilities and perks at milestone levels
-- Visual celebrations and notifications
+### ✅ Level Up System Enhancement
+- ✅ Interactive level-up screen with stat allocation
+- ✅ Choice between different upgrade paths
+- ✅ Unlock new abilities and perks at milestone levels
+- ✅ Visual celebrations and notifications
 - Prestige system for endgame progression
 
 ### Blacksmith System
