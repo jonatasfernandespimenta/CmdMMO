@@ -3,7 +3,7 @@ import json
 class Party:
   """Manages party state on the client side"""
   
-  def __init__(self, sio, player_id):
+  def __init__(self, sio, player_id, on_party_joined_callback=None):
     self.sio = sio
     self.player_id = player_id
     self.party_id = None
@@ -11,6 +11,7 @@ class Party:
     self.members = []
     self.pending_invites = []
     self.online_players = []
+    self.on_party_joined_callback = on_party_joined_callback  # Callback when joining party
     
     # Setup event listeners
     self._setup_listeners()
@@ -34,9 +35,14 @@ class Party:
   def _on_party_updated(self, data):
     """Called when party state changes"""
     party = json.loads(data)
+    was_in_party = self.party_id is not None
     self.party_id = party['id']
     self.leader = party['leader']
     self.members = party['members']
+    
+    # If we just joined a party (wasn't in one before), trigger callback
+    if not was_in_party and self.on_party_joined_callback:
+      self.on_party_joined_callback()
   
   def _on_party_left(self, data):
     """Called when player successfully leaves party"""

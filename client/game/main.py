@@ -27,14 +27,32 @@ def main():
   
   sio = socketio.Client()
   
-  # Initialize party system (before maps)
-  party = Party(sio, None)  # Will set player_id later
-  
-  # Setup maps
+  # Setup maps first
   city = City()
   city.createBoard()
   
-  dungeon = Dungeon(enemies, chests, city_map=city, term=term, party=party, sio=sio)
+  dungeon = Dungeon(enemies, chests, city_map=city, term=term, party=None, sio=sio)
+  
+  # Callback to regenerate dungeon when joining party while in dungeon
+  def on_party_joined():
+    # Check if player is currently in dungeon
+    if client.current_map == dungeon:
+      # Force dungeon regeneration
+      dungeon.seed = None
+      dungeon.is_synced = False
+      dungeon.currentLevel = 1
+      dungeon.enemies.clear()
+      dungeon.chests.clear()
+      dungeon.portalActive = False
+      dungeon.portalPosition = None
+      dungeon.createBoard()
+      dungeon.createRandomEnemies(5)
+      dungeon.createRandomChests(5)
+      print("[Party] Dungeon regenerated to sync with party leader!")
+  
+  # Initialize party system with callback
+  party = Party(sio, None, on_party_joined_callback=on_party_joined)
+  dungeon.party = party  # Link party to dungeon
   dungeon.setCityMap(city)
   city.setDungeonMap(dungeon)
   
