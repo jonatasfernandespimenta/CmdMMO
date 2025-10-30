@@ -1,5 +1,7 @@
 from blessed import Terminal
 from engine.core.state_manager import StateManager
+import io
+from contextlib import redirect_stdout
 
 class GameClient:
   """Main game client that manages the game loop and state"""
@@ -31,10 +33,15 @@ class GameClient:
       self.players.append(player)
   
   def draw(self):
-    """Draw the current game state"""
-    print(self.term.home + self.term.clear)
+    """Draw the current game state with double buffering to prevent flickering"""
     if self.current_map:
-      self.current_map.init(self.players, self.term)
+      # Build the entire frame in a buffer first
+      buffer = io.StringIO()
+      with redirect_stdout(buffer):
+        self.current_map.init(self.players, self.term)
+      
+      # Print everything at once
+      print(self.term.home + self.term.clear + buffer.getvalue(), end='', flush=True)
   
   def update(self):
     """Update game state (called every frame)"""

@@ -92,6 +92,10 @@ def main():
     if server_response:
       print(term.center(term.green(f"Player created on server with ID: {server_response['id']}")).rstrip())
       time.sleep(1)
+    else:
+      print(term.center(term.yellow("Warning: Could not connect to server. Playing offline mode.")).rstrip())
+      time.sleep(1)
+      api_client = None  # Disable API client if server is unavailable
 
     # Create player
     player = Player(cityInfo[0], cityInfo[1], cityInfo[2], [0, 0], playerName, playerClass, term, api_client)
