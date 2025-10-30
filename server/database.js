@@ -5,7 +5,7 @@ const db = new Database('cmdmmo.db');
 db.exec(`
   CREATE TABLE IF NOT EXISTS Player (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL UNIQUE,
+    name TEXT NOT NULL,
     class TEXT NOT NULL,
     maxDungeonLevel INTEGER DEFAULT 0,
     maxGold INTEGER DEFAULT 0,

@@ -6,7 +6,7 @@ from engine.maps.map import Map
 from game.maps.map_transition import DungeonNextLevelTransition, DungeonToCityTransition
 
 class Dungeon(Map):
-  def __init__(self, enemies, chests, city_map=None):
+  def __init__(self, enemies, chests, city_map=None, term=None):
     super().__init__(30, 15)
     self.enemies = enemies
     self.chests = chests
@@ -15,6 +15,7 @@ class Dungeon(Map):
     self.portalActive = False
     self.exitPortalPosition = [0, 1]  # Exit portal next to spawn point
     self.city_map = city_map
+    self.term = term
 
   def createBoard(self):
     board = [['.' for i in range(self.windowWidth + 1)] for j in range(self.windowHeight + 1)]
@@ -159,7 +160,7 @@ class Dungeon(Map):
     if self.isBossStage():
       numMinions = random.randint(2, 5)
       
-      boss = Enemy([random.randint(0, self.windowHeight-1), random.randint(0, self.windowWidth-1)], self.lines, self.currentLevel, isBoss=True)
+      boss = Enemy([random.randint(0, self.windowHeight-1), random.randint(0, self.windowWidth-1)], self.lines, self.currentLevel, isBoss=True, term=self.term)
       boss.name = 'Shadow Lord'
       boss.base_hp = 20
       boss.base_attack = 10
@@ -170,18 +171,22 @@ class Dungeon(Map):
       for i in range(numMinions):
         enemy_type = random.choice([Snake, Goblin])
         pos = [random.randint(0, self.windowHeight-1), random.randint(0, self.windowWidth-1)]
-        self.enemies.append(enemy_type(pos, self.lines, self.currentLevel))
+        self.enemies.append(enemy_type(pos, self.lines, self.currentLevel, term=self.term))
     else:
       for i in range(amount):
         enemy_type = random.choice([Snake, Goblin])
         pos = [random.randint(0, self.windowHeight-1), random.randint(0, self.windowWidth-1)]
-        self.enemies.append(enemy_type(pos, self.lines, self.currentLevel))
+        self.enemies.append(enemy_type(pos, self.lines, self.currentLevel, term=self.term))
 
   def createRandomChests(self, amount):
     for i in range(amount):
       self.chests.append(Chest([random.randint(0, self.windowHeight-1), random.randint(0, self.windowWidth-1)], self.lines))
 
   def init(self, players, term):
+    # Store term for enemy creation
+    if not self.term:
+      self.term = term
+    
     # Only create board if it doesn't exist yet
     if len(self.lines) == 0:
       self.createBoard()

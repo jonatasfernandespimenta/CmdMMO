@@ -36,9 +36,6 @@ app.post('/api/player', (req, res) => {
     const newPlayer = getPlayerById.get(result.lastInsertRowid);
     res.status(201).json(newPlayer);
   } catch (error) {
-    if (error.code === 'SQLITE_CONSTRAINT_UNIQUE') {
-      return res.status(409).json({ error: 'Player name already exists' });
-    }
     res.status(500).json({ error: error.message });
   }
 });

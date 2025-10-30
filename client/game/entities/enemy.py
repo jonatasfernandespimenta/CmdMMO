@@ -1,14 +1,20 @@
 import time
 import random
+from game.mechanics.combat import CombatSystem
 
 class Enemy:
-  def __init__(self, position, lines, level=1, isBoss=False):
+  def __init__(self, position, lines, level=1, isBoss=False, term=None):
     self.enemyPosition = position
     self.level = level
     self.isBoss = isBoss
     self.lines = lines
     self.isInCombat = False
     self.id = random.randint(0, 1000000)
+    self.term = term
+    
+    # Combat system (will be initialized if term is provided)
+    if term:
+      self.combat = CombatSystem(term)
     
     if not hasattr(self, 'base_hp'):
       self.base_hp = 10
@@ -16,6 +22,8 @@ class Enemy:
       self.base_attack = 5
     if not hasattr(self, 'base_defense'):
       self.base_defense = 2
+    if not hasattr(self, 'base_luck'):
+      self.base_luck = 2
     if not hasattr(self, 'name'):
       self.name = "Enemy"
     
@@ -32,6 +40,7 @@ class Enemy:
       self.maxHp = self.hp
       self.attack = (self.base_attack + (self.level - 1) * 2) * 2
       self.defense = (self.base_defense + (self.level - 1) * 1) * 2
+      self.luck = (self.base_luck + (self.level - 1)) * 2
       if not self.name.endswith('(BOSS)'):
         self.name = self.name + ' (BOSS)'
     else:
@@ -39,6 +48,7 @@ class Enemy:
       self.maxHp = self.hp
       self.attack = self.base_attack + (self.level - 1) * 2
       self.defense = self.base_defense + (self.level - 1) * 1
+      self.luck = self.base_luck + (self.level - 1)
   
   def _calculate_drops(self):
     """Calcula os drops baseado no level e se é boss"""
@@ -113,6 +123,9 @@ class Enemy:
   def getDefense(self):
     return self.defense
   
+  def getLuck(self):
+    return self.luck
+  
   def setHp(self, hp):
     self.hp = hp
 
@@ -162,14 +175,5 @@ class Enemy:
     self.defense = defense
 
   def attackPlayer(self, player):
-    playerLuck = player.getLuck() 
-
-    missChance = random.random() < playerLuck / 100
-
-    if not missChance:
-      if self.attack - player.getDefense() >= 0:
-        player.setHp(player.getHp() - (self.attack - player.getDefense()))
-
-      print("The enemy attacked you for " + str(self.attack - player.getDefense()) + " damage!")
-    else:
-      print("The enemy's attack missed!")
+    """Attack player using combat system if available"""
+    self.combat.attack(self, player, "The enemy", "you")

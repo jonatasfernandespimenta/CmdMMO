@@ -3,13 +3,13 @@ from game.entities.enemy import Enemy
 from game.items.materials import materials
 
 class Snake(Enemy):
-  def __init__(self, position, lines, level=1):
+  def __init__(self, position, lines, level=1, term=None):
     self.base_hp = 10
     self.base_attack = 5
     self.base_defense = 2
     self.name = "Snake"
     
-    super().__init__(position, lines, level)
+    super().__init__(position, lines, level, term=term)
     
     self.goldDrop = random.randint(level * 3, level * 8)
     self.xpDrop = random.randint(level * 8, level * 15)

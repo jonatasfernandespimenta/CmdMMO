@@ -3,6 +3,7 @@ import random
 from engine.core.player import Player as BasePlayer
 from game.helper import blockers
 from game.mechanics.farm import Farm
+from game.mechanics.combat import CombatSystem
 
 class Player(BasePlayer):
   """MMO Player - extends engine Player with MMO-specific features"""
@@ -53,6 +54,9 @@ class Player(BasePlayer):
     
     # MMO-specific: Farm system
     self.farm = Farm(self)
+    
+    # Combat system
+    self.combat = CombatSystem(term)
     
     # API client for syncing with server
     self.api_client = api_client
@@ -118,21 +122,17 @@ class Player(BasePlayer):
     return False
 
   def attackEnemy(self, enemy):
-    """Attack an enemy with critical hit chance based on luck"""
-    criticalHit = random.random() < self.luck / 100
-    damage = max(1, self.attack - enemy.getDefense())
+    """Attack an enemy using the combat system"""
+    enemyDied = self.combat.attack(self, enemy, "You", "the enemy")
     
-    if criticalHit:
-      damage *= 2
-      print(self.term.bold_red("Critical hit!"))
-
-    enemy.setHp(enemy.getHp() - damage)
-    print(self.term.green("You attacked the enemy for " + str(damage) + " damage!"))
-    print(self.term.yellow("Enemy HP: " + str(max(0, enemy.getHp())) + "/" + str(enemy.getMaxHp())))
-
-    if enemy.getHp() <= 0:
+    if enemyDied:
       print(self.term.bold_green("You killed the enemy!"))
       enemy.removeEnemy(self.lines)
+      return True
+    
+    # Enemy counterattacks if still alive
+    enemy.attackPlayer(self)
+    return False
   
   # ==================== Override Base Methods ====================
   
