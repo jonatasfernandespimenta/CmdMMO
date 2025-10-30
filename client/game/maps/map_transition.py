@@ -37,6 +37,9 @@ class DungeonNextLevelTransition(MapTransition):
     print(term.move_y(term.height // 2 + 1) + term.center(term.bold_magenta('Entering portal...')).rstrip())
     
     nextStage = self.destination_map.getCurrentLevel() + 1
+
+    player.maxDungeonLevel = max(player.maxDungeonLevel, nextStage)
+
     if nextStage % 5 == 0:
       print(term.move_y(term.height // 2 + 3) + term.center(term.bold_red('!!! WARNING: BOSS ROOM AHEAD !!!')).rstrip())
     
