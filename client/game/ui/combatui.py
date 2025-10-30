@@ -60,11 +60,24 @@ class CombatUI:
         elif choice == "2":
             print(self.term.blue("You defended!"))
         elif choice == "3":
-            print(self.term.yellow("No items to use!"))
+            self.open_inventory()
         elif choice == "4":
             print(self.term.red("You ran away!"))
         else:
             print(self.term.red("That's not a valid choice!"))
+    
+    def open_inventory(self):
+        """Open inventory during combat"""
+        from game.ui.inventoryui import InventoryUi
+        
+        inventory_ui = InventoryUi(self.player, self.term)
+        inventory_ui.draw()
+        
+        # Redraw combat screen after inventory closes
+        print(self.term.home + self.term.clear)
+        print(self.term.bold_red("You are fighting a " + self.enemy.getName() + " [Lvl " + str(self.enemy.getLevel()) + "]!"))
+        print(self.term.yellow("Enemy HP: " + str(self.enemy.getHp()) + "/" + str(self.enemy.getMaxHp())))
+        print(self.term.cyan("Your HP: " + str(self.player.getHp()) + "/" + str(self.player.getMaxHp())))
 
     def enemy_turn(self):
         print(self.term.bold_red("\nIt's the enemy's turn!"))

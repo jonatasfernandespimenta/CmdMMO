@@ -1,15 +1,46 @@
 import random
-
+from client.game.skills.fighting_abilities import fighting_abilities
+from client.game.skills.elements import elements
 class CombatSystem:
   """Centralized combat system handling all battle logic"""
   
   def __init__(self, term):
     self.term = term
   
-  def calculateDamage(self, attacker, defender):
+  def calculateDamage(self, attacker, defender, skillId=None):
     """Calculate damage dealt from attacker to defender"""
     baseDamage = max(1, attacker.getAttack() - defender.getDefense())
-    return baseDamage
+    damageMultiplier = 1.0
+
+    if skillId:
+      skill = next((s for s in fighting_abilities if s["id"] == skillId), None)
+      if skill:
+        skillElement = skill.get("elementType", None)
+        defenderElement = defender.getElementType()
+        attackerElement = attacker.getElementType()
+        
+        if skillElement and defenderElement:
+          elementData = next((e for e in elements if e["type"] == skillElement), None)
+          if elementData:
+            if defenderElement in elementData["weaknesses"]:
+              damageMultiplier *= 1.5
+            elif defenderElement in elementData["resistances"]:
+              damageMultiplier *= 0.75
+
+        if attackerElement and defenderElement:
+          attackerElementData = next((e for e in elements if e["type"] == attackerElement), None)
+          if attackerElementData:
+            if defenderElement in attackerElementData["weaknesses"]:
+              damageMultiplier *= 1.2
+            elif defenderElement in attackerElementData["resistances"]:
+              damageMultiplier *= 0.9
+
+        if skill["isMagical"]:
+          baseDamage = skill["damage"]
+        else:
+          baseDamage = max(1, (skill["damage"] + attacker.getAttack() * 0.5) - defender.getDefense())
+    
+    return max(1, baseDamage * damageMultiplier)
   
   def checkCriticalHit(self, attacker):
     """Check if attacker lands a critical hit based on luck"""
@@ -23,7 +54,7 @@ class CombatSystem:
       return random.random() < defender.getLuck() / 100
     return False
 
-  def attack(self, attacker, target, attackerName=None, targetName=None):
+  def attack(self, attacker, target, attackerName=None, targetName=None, skillId=None):
     """
     Generic attack method - works for both player and enemy
     

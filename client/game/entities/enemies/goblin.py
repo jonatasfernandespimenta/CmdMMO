@@ -1,6 +1,7 @@
 import random
 from game.entities.enemy import Enemy
 from game.items.materials import seeds
+from game.skills.fighting_abilities import fighting_abilities
 
 class Goblin(Enemy):
   def __init__(self, position, lines, level=1, term=None):
@@ -13,6 +14,9 @@ class Goblin(Enemy):
     
     self.goldDrop = random.randint(level * 10, level * 20)
     self.xpDrop = random.randint(level * 15, level * 30)
+    
+    # Goblin skills - rogue/dirty fighter
+    self.skills = ["dirty_trick", "goblin_backstab", "sneak_attack"]
     
     mushroom_seed = next(s for s in seeds if s['name'] == 'Mushroom Seed')
     self.item_drops = [

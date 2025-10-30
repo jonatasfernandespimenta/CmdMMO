@@ -3,7 +3,7 @@ import random
 from game.mechanics.combat import CombatSystem
 
 class Enemy:
-  def __init__(self, position, lines, level=1, isBoss=False, term=None):
+  def __init__(self, position, lines, level=1, isBoss=False, elementType=None, term=None,):
     self.enemyPosition = position
     self.level = level
     self.isBoss = isBoss
@@ -11,6 +11,7 @@ class Enemy:
     self.isInCombat = False
     self.id = random.randint(0, 1000000)
     self.term = term
+    self.elementType = elementType
     
     # Combat system (will be initialized if term is provided)
     if term:
@@ -95,6 +96,10 @@ class Enemy:
   
   def setIsInCombat(self, isInCombat):
     self.isInCombat = isInCombat
+
+  def getElementType(self):
+    """Get enemy's elemental type"""
+    return self.elementType
 
   def pathIsBlocked(self, enemyPosition, boardWidth, boardHeight):
     if enemyPosition[0] < 0 or enemyPosition[0] > boardHeight-1 or enemyPosition[1] < 0 or enemyPosition[1] > boardWidth-1:

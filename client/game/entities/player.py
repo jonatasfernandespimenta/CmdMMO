@@ -13,20 +13,30 @@ class Player(BasePlayer):
       'hp': 80,
       'attack': 15,
       'defense': 4,
-      'luck': 8
+      'luck': 8,
+      'elementType': 'poison'
     },
     'knight': {
       'hp': 120,
       'attack': 12,
       'defense': 10,
-      'luck': 3
+      'luck': 3,
+      'elementType': 'earth'
     },
-    'wizard': {
+    'ice_wizard': {
       'hp': 70,
       'attack': 18,
       'defense': 3,
-      'luck': 5
-    }
+      'luck': 5,
+      'elementType': 'ice'
+    },
+    'fire_mage': {
+      'hp': 75,
+      'attack': 20,
+      'defense': 2,
+      'luck': 4,
+      'elementType': 'fire'
+    },
   }
 
   def __init__(self, lines, windowWidth, windowHeight, playerPosition, name, playerClass, term, api_client=None):
@@ -75,6 +85,10 @@ class Player(BasePlayer):
     """Get luck stat"""
     return self.luck
   
+  def getElementType(self):
+    """Get player's elemental type based on class"""
+    return self.CLASSES[self.playerClass]['elementType']
+
   def addProperty(self, property):
     """Add property to player (house, farm, etc)"""
     self.property.append(property)

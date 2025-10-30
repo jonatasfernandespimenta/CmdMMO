@@ -1,0 +1,312 @@
+fighting_abilities = [
+  # Rogue Skills (Physical)
+  {
+    "name": "Cheap Shot",
+    "id": "cheap_shot",
+    "damage": 15,
+    "stunChance": 0.20,
+    "duration": 0,
+    "effectPerTurn": 0,
+    "mpCost": 5,
+    "classes": ["rogue"],
+    "isMagical": False
+  },
+  {
+    "name": "Backstab",
+    "id": "backstab",
+    "damage": 30,
+    "stunChance": 0.05,
+    "duration": 0,
+    "effectPerTurn": 0,
+    "mpCost": 12,
+    "classes": ["rogue"],
+    "isMagical": False
+  },
+  {
+    "name": "Sinister Strike",
+    "id": "sinister_strike",
+    "damage": 20,
+    "stunChance": 0.0,
+    "duration": 0,
+    "effectPerTurn": 0,
+    "mpCost": 8,
+    "classes": ["rogue"],
+    "isMagical": False
+  },
+  {
+    "name": "Eviscerate",
+    "id": "eviscerate",
+    "damage": 45,
+    "stunChance": 0.0,
+    "duration": 0,
+    "effectPerTurn": 0,
+    "mpCost": 20,
+    "classes": ["rogue"],
+    "isMagical": False
+  },
+  {
+    "name": "Ambush",
+    "id": "ambush",
+    "damage": 50,
+    "stunChance": 0.15,
+    "duration": 0,
+    "effectPerTurn": 0,
+    "mpCost": 25,
+    "classes": ["rogue"],
+    "isMagical": False
+  },
+  {
+    "name": "Kidney Shot",
+    "id": "kidney_shot",
+    "damage": 10,
+    "stunChance": 0.50,
+    "duration": 2,
+    "effectPerTurn": 0,
+    "mpCost": 15,
+    "classes": ["rogue"],
+    "isMagical": False
+  },
+  {
+    "name": "Garrote",
+    "id": "garrote",
+    "damage": 5,
+    "stunChance": 0.0,
+    "duration": 3,
+    "effectPerTurn": 8,
+    "mpCost": 18,
+    "classes": ["rogue"],
+    "isMagical": False
+  },
+  {
+    "name": "Rupture",
+    "id": "rupture",
+    "damage": 0,
+    "stunChance": 0.0,
+    "duration": 4,
+    "effectPerTurn": 10,
+    "mpCost": 22,
+    "classes": ["rogue"],
+    "isMagical": False
+  },
+  # Knight Skills (Physical)
+  {
+    "name": "Power Strike",
+    "id": "power_strike",
+    "damage": 25,
+    "stunChance": 0.10,
+    "duration": 0,
+    "effectPerTurn": 0,
+    "mpCost": 10,
+    "classes": ["knight"],
+    "isMagical": False
+  },
+  {
+    "name": "Mortal Strike",
+    "id": "mortal_strike",
+    "damage": 40,
+    "stunChance": 0.0,
+    "duration": 0,
+    "effectPerTurn": 0,
+    "mpCost": 18,
+    "classes": ["knight"],
+    "isMagical": False
+  },
+  {
+    "name": "Shield Slam",
+    "id": "shield_slam",
+    "damage": 35,
+    "stunChance": 0.25,
+    "duration": 0,
+    "effectPerTurn": 0,
+    "mpCost": 15,
+    "classes": ["knight"],
+    "isMagical": False
+  },
+  {
+    "name": "Heroic Strike",
+    "id": "heroic_strike",
+    "damage": 28,
+    "stunChance": 0.0,
+    "duration": 0,
+    "effectPerTurn": 0,
+    "mpCost": 12,
+    "classes": ["knight"],
+    "isMagical": False
+  },
+  {
+    "name": "Execute",
+    "id": "execute",
+    "damage": 60,
+    "stunChance": 0.0,
+    "duration": 0,
+    "effectPerTurn": 0,
+    "mpCost": 30,
+    "classes": ["knight"],
+    "isMagical": False
+  },
+  {
+    "name": "Thunderclap",
+    "id": "thunderclap",
+    "damage": 20,
+    "stunChance": 0.15,
+    "duration": 0,
+    "effectPerTurn": 0,
+    "mpCost": 14,
+    "classes": ["knight"],
+    "isMagical": False
+  },
+  {
+    "name": "Rend",
+    "id": "rend",
+    "damage": 5,
+    "stunChance": 0.0,
+    "duration": 3,
+    "effectPerTurn": 7,
+    "mpCost": 10,
+    "classes": ["knight"],
+    "isMagical": False
+  },
+  {
+    "name": "Charge",
+    "id": "charge",
+    "damage": 15,
+    "stunChance": 0.30,
+    "duration": 0,
+    "effectPerTurn": 0,
+    "mpCost": 8,
+    "classes": ["knight"],
+    "isMagical": False
+  },
+  # Elemental/Magical Skills
+  {
+    "name": "Apply Poison",
+    "id": "apply_poison",
+    "damage": 5,
+    "stunChance": 0,
+    "duration": 3,
+    "effectPerTurn": 5,
+    "mpCost": 10,
+    "classes": ["rogue", "mage"],
+    "isMagical": True,
+    "elementType": "poison"
+  },
+  {
+    "name": "Fire Blast",
+    "id": "fire_blast",
+    "damage": 30,
+    "stunChance": 0,
+    "duration": 2,
+    "effectPerTurn": 4,
+    "mpCost": 12,
+    "classes": ["mage"],
+    "isMagical": True,
+    "elementType": "fire"
+  },
+  {
+    "name": "Ice Shard",
+    "id": "ice_shard",
+    "damage": 20,
+    "stunChance": 0,
+    "duration": 2,
+    "effectPerTurn": 10,
+    "mpCost": 8,
+    "classes": ["mage"],
+    "isMagical": True,
+    "elementType": "ice"
+  },
+  {
+    "name": "Earthquake",
+    "id": "earthquake",
+    "damage": 25,
+    "stunChance": 0.10,
+    "duration": 0,
+    "effectPerTurn": 0,
+    "mpCost": 15,
+    "classes": ["mage", "shaman"],
+    "isMagical": True,
+    "elementType": "earth"
+  },
+  {
+    "name": "Thunder Strike",
+    "id": "thunder_strike",
+    "damage": 35,
+    "stunChance": 0.15,
+    "duration": 0,
+    "effectPerTurn": 0,
+    "mpCost": 14,
+    "classes": ["mage", "shaman"],
+    "isMagical": True,
+    "elementType": "electric"
+  },
+  {
+    "name": "Magic Shield",
+    "id": "magic_shield",
+    "damage": 0,
+    "stunChance": 0,
+    "duration": 3,
+    "effectPerTurn": 0,
+    "mpCost": 8,
+    "classes": ["mage"],
+    "isMagical": True,
+    "elementType": "arcane",
+    "defenseBoost": 10
+  },
+  # Enemy Skills
+  {
+    "name": "Poison Bite",
+    "id": "poison_bite",
+    "damage": 8,
+    "stunChance": 0,
+    "duration": 3,
+    "effectPerTurn": 3,
+    "mpCost": 0,
+    "classes": ["enemy"],
+    "isMagical": True,
+    "elementType": "poison"
+  },
+  {
+    "name": "Venomous Strike",
+    "id": "venomous_strike",
+    "damage": 5,
+    "stunChance": 0,
+    "duration": 4,
+    "effectPerTurn": 5,
+    "mpCost": 0,
+    "classes": ["enemy"],
+    "isMagical": True,
+    "elementType": "poison"
+  },
+  {
+    "name": "Dirty Trick",
+    "id": "dirty_trick",
+    "damage": 12,
+    "stunChance": 0.15,
+    "duration": 0,
+    "effectPerTurn": 0,
+    "mpCost": 0,
+    "classes": ["enemy"],
+    "isMagical": False
+  },
+  {
+    "name": "Backstab",
+    "id": "goblin_backstab",
+    "damage": 18,
+    "stunChance": 0.10,
+    "duration": 0,
+    "effectPerTurn": 0,
+    "mpCost": 0,
+    "classes": ["enemy"],
+    "isMagical": False
+  },
+  {
+    "name": "Sneak Attack",
+    "id": "sneak_attack",
+    "damage": 15,
+    "stunChance": 0,
+    "duration": 2,
+    "effectPerTurn": 4,
+    "mpCost": 0,
+    "classes": ["enemy"],
+    "isMagical": False
+  }
+]
