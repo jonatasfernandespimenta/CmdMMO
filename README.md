@@ -79,15 +79,15 @@ The server will start on port 3001.
 ### Start the Client
 In the project root directory, run:
 ```bash
-sudo python3 -m game.main
+sudo python3 -m client.game.main
 ```
 
 **Note**: `sudo` is required for proper keyboard input handling.
 
 ### Multiple Players
 To play with multiple people, each player should:
-1. Ensure they can connect to the server (update server address in `client/server.py` if needed)
-2. Run `sudo python3 -m game.main` in their own terminal
+1. Ensure they can connect to the server (update server address in `client/game/server.py` if needed)
+2. Run `sudo python3 -m client.game.main` in their own terminal
 
 ## How to Play
 
@@ -129,27 +129,51 @@ To play with multiple people, each player should:
 ```
 CmdMMO/
 ├── server/
-│   ├── index.js           # Express + Socket.IO server
-│   └── package.json       # Server dependencies
+│   ├── index.js              # Express + Socket.IO server
+│   ├── package.json          # Server dependencies
+│   └── routes/               # API routes
 ├── client/
-│   ├── main.py           # Game entry point
-│   ├── player.py         # Player class and mechanics
-│   ├── enemy.py          # Enemy AI and combat
-│   ├── board.py          # Game board and level management
-│   ├── chest.py          # Loot chest mechanics
-│   ├── procedural_board.py  # Dungeon generation
-│   ├── server.py         # Client-server communication
-│   ├── items/
-│   │   ├── potions.py    # Potion definitions
-│   │   └── swords.py     # Sword definitions
-│   ├── ui/
-│   │   ├── combatui.py   # Combat interface
-│   │   └── inventoryui.py # Inventory interface
-│   └── arts/
-│       ├── merchant.py   # ASCII art
-│       ├── potions.py    # ASCII art
-│       └── swords.py     # ASCII art
-└── requirements.txt      # Python dependencies
+│   ├── engine/               # Core game engine (maps, UI components, entities)
+│   │   ├── core/             # Game client and core systems
+│   │   ├── entities/         # Base entity classes
+│   │   ├── maps/             # Base map system
+│   │   └── ui/               # Base UI components
+│   └── game/                 # Game-specific implementations
+│       ├── main.py           # Game entry point
+│       ├── server.py         # Client-server communication
+│       ├── api_client.py     # REST API client
+│       ├── entities/         # Game entities (player, enemy)
+│       ├── maps/             # City and dungeon maps
+│       │   ├── city.py       # City hub map
+│       │   ├── dungeon.py    # Procedural dungeon
+│       │   └── map_transition.py  # Map transitions
+│       ├── items/            # Item definitions
+│       │   ├── potions.py    # Potion types
+│       │   ├── swords.py     # Weapon types
+│       │   └── materials.py  # Crafting materials
+│       ├── mechanics/        # Game mechanics
+│       │   ├── farming.py    # Farming system
+│       │   ├── properties.py # Property ownership
+│       │   └── ranking.py    # Player ranking
+│       ├── skills/           # Skills system
+│       │   └── skill.py      # Skill definitions
+│       ├── ui/               # User interfaces
+│       │   ├── combatui.py   # Combat interface
+│       │   ├── inventoryui.py # Inventory interface
+│       │   ├── skillsui.py   # Skills menu
+│       │   ├── levelup_ui.py # Level up screen
+│       │   └── interactiveuis/ # Interactive UIs
+│       │       ├── farmui.py      # Farm interface
+│       │       ├── alchemist_ui.py # Potion crafting
+│       │       ├── landlord_ui.py  # Property purchase
+│       │       ├── rank_ui.py      # Rankings display
+│       │       └── yago_ui.py      # Easter egg NPC
+│       └── arts/             # ASCII art assets
+│           ├── buildings.py  # Building designs
+│           ├── materials.py  # Material icons
+│           ├── merchant.py   # Merchant art
+│           └── shitpost.py   # Easter eggs
+└── requirements.txt          # Python dependencies
 ```
 
 ## Game Mechanics
@@ -248,13 +272,14 @@ Planned features and improvements for future versions:
 - 🔄 Rare seed drops from enemies and chests (Coming soon)
 - ✅ Trade or sell harvested crops to merchants
 
-### ✅ Ranking System
+### ✅ Ranking System (IMPLEMENTED)
 - ✅ Player progression tracked through rank tiers (gold, phase, level)
 - ✅ Gold rank representing overall achievement milestones
 - ✅ Phase system for dividing progression into distinct stages
 - ✅ Level tracking within each phase
-- Rank-based rewards and unlocks
-- ✅ Leaderboards showing top-ranked players
+- ✅ Rank board in city for viewing leaderboards
+- ✅ Interactive rank UI showing player statistics
+- 🔄 Rank-based rewards and unlocks (Coming soon)
 
 ### Overworld Map System
 - Open-world map with exploration and travel mechanics
@@ -263,13 +288,16 @@ Planned features and improvements for future versions:
 - Hidden areas and secrets to discover
 - Multiplayer interactions in shared overworld space
 
-### ✅ City Map System (PARTIALLY IMPLEMENTED)
+### ✅ City Map System (IMPLEMENTED)
 - ✅ Safe zone hub with multiple buildings and NPCs
 - ✅ **Landlord House**: Buy and manage player properties (farm)
 - ✅ **Farm House**: Access personal farm for crop management
 - ✅ **Alchemist House**: Craft and buy potions using materials or gold
+- ✅ **Rank Board**: View player rankings and leaderboards
+- ✅ **Yago NPC**: Easter egg character in the city
 - ✅ Portal system to transition between City and Dungeon
 - ✅ Building interaction system with door collision detection
+- ✅ Dynamic building rendering with proper collision
 - 🔄 **Blacksmith District**: Upgrade weapons and armor (Coming soon)
 - 🔄 **Arena**: PvP battles (Coming soon)
 - 🔄 City quest board for side missions (Coming soon)

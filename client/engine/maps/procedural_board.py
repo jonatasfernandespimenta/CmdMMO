@@ -2,13 +2,18 @@ import time
 import random
 
 class ProceduralBoard:
-  def __init__(self, board, boardWidth, boardHeight):
+  def __init__(self, board, boardWidth, boardHeight, seed=None):
     self.board = board
     self.boardWidth = boardWidth
     self.boardHeight = boardHeight
     self.finished = False
     self.path = []
     self.isBacktracking = False
+    self.seed = seed
+    
+    # Set random seed if provided for consistent generation
+    if seed is not None:
+      random.seed(seed)
 
   def getBoard(self):
     return self.board

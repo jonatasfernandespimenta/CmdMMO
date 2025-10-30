@@ -9,7 +9,9 @@ from game.ui.combatui import CombatUI
 from game.ui.inventoryui import InventoryUi
 from game.ui.skillsui import SkillsUI
 from game.ui.levelup_ui import LevelUpUI
+from game.ui.party_ui import PartyUI
 from game.server import Server
+from game.party import Party
 from game.api_client import APIClient
 import socketio
 import time
@@ -26,11 +28,14 @@ def main():
   
   sio = socketio.Client()
   
+  # Initialize party system (before maps)
+  party = Party(sio, None)  # Will set player_id later
+  
   # Setup maps
   city = City()
   city.createBoard()
   
-  dungeon = Dungeon(enemies, chests)
+  dungeon = Dungeon(enemies, chests, city_map=city, term=term, party=party, sio=sio)
   dungeon.setCityMap(city)
   city.setDungeonMap(dungeon)
   
@@ -102,10 +107,13 @@ def main():
     # Create player
     player = Player(cityInfo[0], cityInfo[1], cityInfo[2], [0, 0], playerName, playerClass, term, api_client)
 
-    combatUI = CombatUI(player, enemies, client.draw, term)
+    # Update party with player ID
+    party.player_id = playerName
+    
     inventoryUI = InventoryUi(player, term)
     skillsUI = SkillsUI(player, term)
     levelUpUI = LevelUpUI(player, term)
+    partyUI = PartyUI(player, party, term)
 
     if player not in players:
       players.append(player)
@@ -117,6 +125,9 @@ def main():
     
     server.start()
     server.join(player.getName(), player.getPlayerPosition())
+    
+    # Request current party state
+    party.request_current_party()
 
   # Custom game loop (override GameClient's loop for now)
   with term.fullscreen(), term.cbreak(), term.hidden_cursor():
@@ -144,6 +155,9 @@ def main():
       elif player.getIsSkillsMenuOpen():
         skillsUI.open()
         player.setIsSkillsMenuOpen(False)  # Reset after closing
+      elif player.isPartyMenuOpen:
+        partyUI.open()
+        player.isPartyMenuOpen = False  # Reset after closing
       else:
         client.draw()
       

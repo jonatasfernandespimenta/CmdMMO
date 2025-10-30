@@ -16,7 +16,7 @@ class Player(BasePlayer, CombatEntity):
       'defense': 4,
       'luck': 8,
       'elementType': 'poison',
-      'mp': 200
+      'mp': 20
     },
     'knight': {
       'hp': 120,
@@ -63,11 +63,12 @@ class Player(BasePlayer, CombatEntity):
     self.luck = classStats['luck']
     self.mp = classStats['mp']
     self.maxMp = classStats['mp']
-    self.skillPoints = 5  # Skill points to spend on abilities (starting with 5 for testing)
+    self.skillPoints = 0  # Skill points to spend on abilities (starting with 5 for testing)
 
     self.skills = []  # List of skill IDs the player has learned
     self.skillLevels = {}  # Track level for each skill for scaling
     self.isSkillsMenuOpen = False  # Skills menu state
+    self.isPartyMenuOpen = False  # Party menu state
     self.pendingLevelUp = False  # Flag to show level up UI
 
     ## MMO-specific: Rank System
@@ -147,11 +148,20 @@ class Player(BasePlayer, CombatEntity):
     self.pendingLevelUp = True  # Set flag to show level up UI
     self._syncStatsToServer()  # Sync max level to server
 
-  def interactWithChest(self, chest):
+  def interactWithChest(self, chest, sio=None, party=None):
     """Interact with chest and collect loot"""
     if chest.getPosition() == self.playerPosition and chest.open == False:
       loot = chest.openChest()
       self.addToInventory(loot)  # Use base class method
+      
+      # Sync chest opening with party if in party
+      if sio and party and party.is_in_party():
+        import json
+        sio.emit('chest_opened', json.dumps({
+          'playerId': self.name,
+          'chestId': chest.getID(),
+          'position': chest.getPosition()
+        }))
 
   def addSkill(self, skillId):
     """Add a new skill to the player's skill list"""

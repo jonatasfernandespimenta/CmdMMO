@@ -2,12 +2,14 @@ import time
 from game.skills.fighting_abilities import fighting_abilities
 
 class CombatUI:
-    def __init__(self, player, enemy, drawFunc, term):
+    def __init__(self, player, enemy, drawFunc, term, party=None, sio=None):
         self.player = player
         self.enemy = enemy
         self.isPlayerTurn = True
         self.drawFunc = drawFunc
         self.term = term
+        self.party = party
+        self.sio = sio
 
     def start(self):
         print(self.term.home + self.term.clear)
@@ -45,6 +47,14 @@ class CombatUI:
                 for item in drops['items']:
                     self.player.addToInventory(item)
                     print(self.term.bold_green("You got: " + item['name'] + "!"))
+            
+            # Sync enemy death with party if in party
+            if self.sio and self.party and self.party.is_in_party():
+                import json
+                self.sio.emit('enemy_died', json.dumps({
+                    'playerId': self.player.getName(),
+                    'enemyId': self.enemy.getID()
+                }))
             
             time.sleep(2)
 

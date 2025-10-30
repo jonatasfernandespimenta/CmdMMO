@@ -104,6 +104,11 @@ class Player:
       if hasattr(self, 'isSkillsMenuOpen'):
         self.isSkillsMenuOpen = not self.isSkillsMenuOpen
     
+    elif key.lower() == 'p':
+      # Toggle party menu if the player has this attribute
+      if hasattr(self, 'isPartyMenuOpen'):
+        self.isPartyMenuOpen = not self.isPartyMenuOpen
+    
     if newPlayerPosition != self.playerPosition:
       if network_callback:
         network_callback(newPlayerPosition)

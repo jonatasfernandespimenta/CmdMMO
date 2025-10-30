@@ -6,7 +6,7 @@ from engine.maps.map import Map
 from game.maps.map_transition import DungeonNextLevelTransition, DungeonToCityTransition
 
 class Dungeon(Map):
-  def __init__(self, enemies, chests, city_map=None, term=None):
+  def __init__(self, enemies, chests, city_map=None, term=None, party=None, sio=None):
     super().__init__(30, 15)
     self.enemies = enemies
     self.chests = chests
@@ -16,11 +16,96 @@ class Dungeon(Map):
     self.exitPortalPosition = [0, 1]  # Exit portal next to spawn point
     self.city_map = city_map
     self.term = term
+    self.party = party
+    self.sio = sio
+    self.seed = None
+    self.is_synced = False
+    
+    # Setup sync listeners if party exists
+    if self.sio and self.party:
+      self._setup_sync_listeners()
 
+  def _setup_sync_listeners(self):
+    """Setup WebSocket listeners for party dungeon sync"""
+    import json
+    
+    def on_dungeon_seed(data):
+      seed_data = json.loads(data)
+      self.seed = seed_data['seed']
+      self.currentLevel = seed_data['level']
+      self.is_synced = True
+      # Regenerate board with new seed
+      self.createBoard()
+    
+    def on_enemy_spawned(data):
+      enemy_data = json.loads(data)
+      # Will be handled when enemies are spawned
+      pass
+    
+    def on_enemy_removed(data):
+      enemy_data = json.loads(data)
+      enemyId = enemy_data['enemyId']
+      # Remove enemy from list
+      self.enemies = [e for e in self.enemies if e.getID() != enemyId]
+      for enemy in self.enemies:
+        if enemy.getID() == enemyId:
+          enemy.removeEnemy(self.lines)
+    
+    def on_chest_opened_sync(data):
+      chest_data = json.loads(data)
+      position = chest_data['position']
+      # Mark chest as opened
+      for chest in self.chests:
+        if chest.getPosition() == position:
+          chest.open = True
+          chest.removeChest()
+    
+    def on_portal_spawned_sync(data):
+      portal_data = json.loads(data)
+      self.portalPosition = portal_data['position']
+      self.portalActive = True
+    
+    def on_stage_changed_sync(data):
+      stage_data = json.loads(data)
+      self.currentLevel = stage_data['newLevel']
+      # Will trigger board regeneration
+    
+    self.sio.on('dungeon_seed', on_dungeon_seed)
+    self.sio.on('enemy_spawned', on_enemy_spawned)
+    self.sio.on('enemy_removed', on_enemy_removed)
+    self.sio.on('chest_opened_sync', on_chest_opened_sync)
+    self.sio.on('portal_spawned_sync', on_portal_spawned_sync)
+    self.sio.on('stage_changed_sync', on_stage_changed_sync)
+  
   def createBoard(self):
     board = [['.' for i in range(self.windowWidth + 1)] for j in range(self.windowHeight + 1)]
+    
+    # Generate or use existing seed for party sync
+    if self.seed is None and self.party and self.party.is_in_party():
+      # Leader generates seed
+      if self.party.is_leader():
+        import time
+        self.seed = int(time.time() * 1000) % (2**31)
+        # Notify server of dungeon generation
+        if self.sio:
+          import json
+          self.sio.emit('dungeon_generate', json.dumps({
+            'playerId': self.party.player_id,
+            'seed': self.seed,
+            'level': self.currentLevel
+          }))
+      else:
+        # Non-leader waits for seed from server
+        if not self.is_synced:
+          # Use temporary seed until synced
+          import time
+          self.seed = int(time.time() * 1000) % (2**31)
+    elif self.seed is None:
+      # Solo play - generate random seed
+      import time
+      self.seed = int(time.time() * 1000) % (2**31)
 
-    proceduralBoard = ProceduralBoard(board, self.windowWidth, self.windowHeight)
+    proceduralBoard = ProceduralBoard(board, self.windowWidth, self.windowHeight, self.seed)
     proceduralBoard.procedurelyGeneratedBoard()
 
     generatedBoard = proceduralBoard.getBoard()
@@ -101,6 +186,14 @@ class Dungeon(Map):
       if self.lines[pos[0]][pos[1]] == '.':
         self.portalPosition = pos
         self.portalActive = True
+        
+        # Sync portal spawn with party if in party
+        if self.sio and self.party and self.party.is_in_party():
+          import json
+          self.sio.emit('portal_spawned', json.dumps({
+            'playerId': self.party.player_id,
+            'position': pos
+          }))
         break
   
   def drawPortal(self):
@@ -124,6 +217,16 @@ class Dungeon(Map):
     self.chests.clear()
     self.portalActive = False
     self.portalPosition = None
+    self.seed = None  # Reset seed for new level generation
+    
+    # Sync stage change with party if in party
+    if self.sio and self.party and self.party.is_in_party():
+      import json
+      self.sio.emit('stage_changed', json.dumps({
+        'playerId': self.party.player_id,
+        'newLevel': self.currentLevel
+      }))
+    
     self.createRandomEnemies(5 + self.currentLevel)
     self.createRandomChests(3 + self.currentLevel // 2)
   
@@ -136,7 +239,7 @@ class Dungeon(Map):
       for enemy in self.enemies:
         if enemy.getEnemyPosition() == player.getPlayerPosition():
           from game.ui.combatui import CombatUI
-          combat = CombatUI(player, enemy, draw, term)
+          combat = CombatUI(player, enemy, draw, term, self.party, self.sio)
           combat.start()
           break
   
