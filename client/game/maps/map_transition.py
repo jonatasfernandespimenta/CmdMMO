@@ -17,8 +17,10 @@ class CityToDungeonTransition(MapTransition):
     dungeon.chests.clear()
     dungeon.portalActive = False
     dungeon.portalPosition = None
+    dungeon.seed = None  # Force new seed generation
+    dungeon.is_synced = False  # Reset sync flag
     
-    # Regenerate the board first
+    # Regenerate the board first (will generate new seed)
     dungeon.createBoard()
     
     # Setup dungeon with new enemies and chests (they'll use the new board)

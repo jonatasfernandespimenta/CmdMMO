@@ -313,9 +313,11 @@ class Dungeon(Map):
     for player in players:
       player.drawPlayer()
 
-    for chest in self.chests:
-      if chest.getPosition() == players[0].getPlayerPosition():
-        player.interactWithChest(chest)
+    # Only the main player (players[0]) can interact with chests
+    if len(players) > 0 and hasattr(players[0], 'interactWithChest'):
+      for chest in self.chests:
+        if chest.getPosition() == players[0].getPlayerPosition():
+          players[0].interactWithChest(chest)
 
     for enemy in self.enemies:
       enemy.moveEnemy(self.windowWidth, self.windowHeight, self.lines)
