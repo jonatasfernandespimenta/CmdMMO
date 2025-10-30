@@ -8,6 +8,7 @@ from game.entities.enemy import Enemy
 from game.ui.combatui import CombatUI
 from game.ui.inventoryui import InventoryUi
 from game.server import Server
+from game.api_client import APIClient
 import socketio
 import time
 
@@ -77,9 +78,23 @@ def main():
     
     playerName = character['name']
     playerClass = character['class']
+    
+    # Initialize API client and create player on server
+    api_client = APIClient('http://localhost:3001')
+    server_response = api_client.createPlayer(
+      name=playerName,
+      player_class=playerClass,
+      maxDungeonLevel=0,
+      maxGold=0,
+      maxLevelReached=1
+    )
+    
+    if server_response:
+      print(term.center(term.green(f"Player created on server with ID: {server_response['id']}")).rstrip())
+      time.sleep(1)
 
     # Create player
-    player = Player(cityInfo[0], cityInfo[1], cityInfo[2], [0, 0], playerName, playerClass, term)
+    player = Player(cityInfo[0], cityInfo[1], cityInfo[2], [0, 0], playerName, playerClass, term, api_client)
 
     combatUI = CombatUI(player, enemies, client.draw, term)
     inventoryUI = InventoryUi(player, term)

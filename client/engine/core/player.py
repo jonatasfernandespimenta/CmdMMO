@@ -45,6 +45,7 @@ class Player:
 
     # Rank system
     self.maxGoldEarned = 0
+    self.maxLevelReached = 1
     
     # Level system
     self.xp = 0
@@ -180,6 +181,7 @@ class Player:
   
   def levelUp(self):
     """Level up and increase stats"""
+    self.maxLevelReached = max(self.maxLevelReached, self.level + 1)
     self.xp -= self.xpToNextLevel
     self.level += 1
     self.xpToNextLevel = int(self.xpToNextLevel * 1.5)

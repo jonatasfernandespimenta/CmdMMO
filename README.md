@@ -274,8 +274,28 @@ Planned features and improvements for future versions:
 - 🔄 **Blacksmith District**: Upgrade weapons and armor (Coming soon)
 - 🔄 **Arena**: PvP battles (Coming soon)
 - 🔄 City quest board for side missions (Coming soon)
-- 🔄 Bank system for storing items and gold (Coming soon)
+- 🔄 **Bank System**: Persistent storage for items and gold (Coming soon)
+  - Create bank account with unique ID and password
+  - Store items and currency securely
+  - Persistent across character deaths - access with new characters
+  - Withdraw/deposit system with authentication
+  - Shared account access for players who know the credentials
 - 🔄 Social spaces for player interactions (Coming soon)
+
+### Neighborhood & Housing System
+- Player housing with purchase and ownership mechanics
+- Neighborhood map instance where purchased houses dynamically appear
+- Multiple players' houses visible in shared neighborhood space
+- **Home Builder Interface**: Terminal-based furniture customization
+  - Keyboard-driven placement system (arrow keys for selection and positioning)
+  - Furniture catalog with various items (beds, tables, decorations, storage)
+  - Grid-based placement within house interior
+  - Save and load custom house layouts
+  - Preview mode before finalizing furniture placement
+- House upgrades (size expansions, additional rooms)
+- Invite other players to visit your house
+- Functional furniture (storage chests, crafting stations, rest areas)
+- Housing costs and maintenance system
 
 ## Future Enhancements
 
