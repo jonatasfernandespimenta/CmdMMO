@@ -71,7 +71,7 @@ def main():
         'description': 'Highest attack, low defense',
         'stats': 'HP: 70 | MP: 50 | ATK: 18 | DEF: 3 | LCK: 5',
         'color': 'bold_magenta',
-        'id': 'wizard'
+        'id': 'ice_wizard'
       }
     ]
     

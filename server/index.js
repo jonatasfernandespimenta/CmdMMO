@@ -1,9 +1,11 @@
 var express = require('express'),
     app = express(), 
-    server = require('http').createServer(app)
+    server = require('http').createServer(app),
+    cors = require('cors')
 
 const { createPlayer, updatePlayer, getPlayerById, getPlayerByName, getAllPlayers, getTop3ByGold, getTop3ByLevel, getTop3ByDungeonLevel, getAllByGold, getAllByLevel, getAllByDungeonLevel } = require('./database');
 
+app.use(cors());
 app.use(express.json());
 
 server.listen(3001);
