@@ -312,7 +312,7 @@ Planned features and improvements for future versions:
 - Player housing with purchase and ownership mechanics
 - Neighborhood map instance where purchased houses dynamically appear
 - Multiple players' houses visible in shared neighborhood space
-- **Home Builder Interface**: Terminal-based furniture customization
+- ✅ **Home Builder Interface**: Terminal-based furniture customization
   - Keyboard-driven placement system (arrow keys for selection and positioning)
   - Furniture catalog with various items (beds, tables, decorations, storage)
   - Grid-based placement within house interior
@@ -321,7 +321,6 @@ Planned features and improvements for future versions:
 - House upgrades (size expansions, additional rooms)
 - Invite other players to visit your house
 - Functional furniture (storage chests, crafting stations, rest areas)
-- Housing costs and maintenance system
 
 ## Future Enhancements
 
