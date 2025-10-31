@@ -41,11 +41,6 @@ jobs:
       - name: Build client with PyInstaller
         run: pyinstaller CmdMMO.spec
 
-      - name: Build server executable
-        working-directory: ./server
-        run: |
-          pkg . --targets node18-${{ matrix.os == 'ubuntu-latest' && 'linux' || matrix.os == 'windows-latest' && 'win' || 'macos' }}-x64 --output ../dist/CmdMMO-Server${{ matrix.os == 'windows-latest' && '.exe' || '' }}
-
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
@@ -56,6 +51,11 @@ jobs:
         run: |
           npm install
           npm install -g pkg
+
+      - name: Build server executable
+        working-directory: ./server
+        run: |
+          pkg . --targets node18-${{ matrix.os == 'ubuntu-latest' && 'linux' || matrix.os == 'windows-latest' && 'win' || 'macos' }}-x64 --output ../dist/CmdMMO-Server${{ matrix.os == 'windows-latest' && '.exe' || '' }}
 
       - name: Create release package (Linux/Mac)
         if: matrix.os != 'windows-latest'
