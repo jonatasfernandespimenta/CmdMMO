@@ -1,6 +1,5 @@
 from engine.maps.map import Map
-from game.arts.buildings import house, farm_house_map_version, mushroom_house, rank_board
-from game.maps.map_transition import CityToDungeonTransition
+from game.arts.buildings import *
 from game.ui.interactiveuis.landlord_ui import LandlordUI
 from game.ui.interactiveuis.yago_ui import YagoUI
 from game.ui.interactiveuis.rank_ui import RankUI
@@ -22,45 +21,54 @@ class City(Map):
     return doors if doors else [(0, 0)]
 
   def onEnterBuilding(self, buildingName, player, term):
-    if buildingName == 'LandLordHouse':
-      landLordUi = LandlordUI(player, term)
-      landLordUi.open()
-    elif buildingName == 'FarmHouse':
-      from game.ui.interactiveuis.farmui import FarmUI
-      farmUi = FarmUI(player, term)
-      farmUi.open()
-    elif buildingName == 'AlchemistHouse':
-      from game.ui.interactiveuis.alchemist_ui import AlchemistUI
-      alchemistUi = AlchemistUI(player, term)
-      alchemistUi.open()
-    elif buildingName == 'Yago':
-      yagoUi = YagoUI(player, term)
-      yagoUi.open()
-    elif buildingName == 'RankBoard':
-      rankUi = RankUI(player, term)
-      rankUi.open()
+    # Map building names to their UI classes
+    ui_map = {
+      'LandLordHouse': LandlordUI,
+      'FarmHouse': lambda p, t: __import__('game.ui.interactiveuis.farmui', fromlist=['FarmUI']).FarmUI(p, t),
+      'AlchemistHouse': lambda p, t: __import__('game.ui.interactiveuis.alchemist_ui', fromlist=['AlchemistUI']).AlchemistUI(p, t),
+      'Yago': YagoUI,
+      'RankBoard': RankUI,
+      'Bank': lambda p, t: __import__('game.ui.interactiveuis.bank_ui', fromlist=['BankUI']).BankUI(p, t)
+    }
+    
+    ui_class = ui_map.get(buildingName)
+    if ui_class:
+      if callable(ui_class) and not isinstance(ui_class, type):
+        # It's a lambda (for lazy imports)
+        ui = ui_class(player, term)
+      else:
+        # It's a class
+        ui = ui_class(player, term)
+      ui.open()
 
   def generateHouses(self):
-    houseArt = self.convertArtToBoardItem(house)
-    farmHouseArt = self.convertArtToBoardItem(farm_house_map_version)
-    mushroomHouseArt = self.convertArtToBoardItem(mushroom_house)
-    rankBoardArt = self.convertArtToBoardItem(rank_board)
-
-    houseDoorPositions = self.calculateDoorPositions(houseArt)
-    farmHouseDoorPositions = self.calculateDoorPositions(farmHouseArt)
-    mushroomHouseDoorPositions = self.calculateDoorPositions(mushroomHouseArt)
+    building_configs = [
+      ('LandLordHouse', house, 8, 5, None),
+      ('AlchemistHouse', mushroom_house, 18, 5, None),
+      
+      ('RankBoard', rank_board, 15, 27, (14, 28)), 
+      
+      ('FarmHouse', farm_house_map_version, 8, 45, None),
+      ('Bank', bank, 18, 45, None)
+    ]
     
-    # Rank board collision point (center of the board)
-    rankBoardPosition = (7, 47)  # Position to interact with rank board
-
-    doorPositions = [(8 + door[0], 8 + door[1]) for door in houseDoorPositions]
-    farmHousePositions = [(20 + door[0], 30 + door[1]) for door in farmHouseDoorPositions]
-    mushroomHousePositions = [(20 + door[0], 8 + door[1]) for door in mushroomHouseDoorPositions]
-
-    self.buildings.append({ 'name': 'LandLordHouse', 'startY': 8, 'startX': 8, 'art': houseArt, 'onEnter': self.onEnterBuilding, 'doorPositions': doorPositions })
-    self.buildings.append({ 'name': 'FarmHouse', 'startY': 20, 'startX': 30, 'art': farmHouseArt, 'onEnter': self.onEnterBuilding, 'doorPositions': farmHousePositions })
-    self.buildings.append({ 'name': 'AlchemistHouse', 'startY': 20, 'startX': 8, 'art': mushroomHouseArt, 'onEnter': self.onEnterBuilding, 'doorPositions': mushroomHousePositions })
-    self.buildings.append({ 'name': 'RankBoard', 'startY': 5, 'startX': 45, 'art': rankBoardArt, 'onEnter': self.onEnterBuilding, 'doorPositions': [rankBoardPosition] })
+    for name, art, start_y, start_x, custom_door in building_configs:
+      building_art = self.convertArtToBoardItem(art)
+      
+      if custom_door:
+        door_positions = [custom_door]
+      else:
+        doors = self.calculateDoorPositions(building_art)
+        door_positions = [(start_y + door[0], start_x + door[1]) for door in doors]
+      
+      self.buildings.append({
+        'name': name,
+        'startY': start_y,
+        'startX': start_x,
+        'art': building_art,
+        'onEnter': self.onEnterBuilding,
+        'doorPositions': door_positions
+      })
 
   def handleCollisions(self, player, draw, term):
     # Check Yago collision
