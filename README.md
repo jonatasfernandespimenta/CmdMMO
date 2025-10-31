@@ -2,6 +2,38 @@
 
 A multiplayer terminal-based roguelike MMO game where players explore procedurally generated dungeons, fight enemies, collect loot, and level up their characters.
 
+## Screenshots & Gameplay
+
+### Class Selection
+![Class Selection](readmestuff/class_selection.png)
+
+### City Hub
+![City](readmestuff/city.png)
+
+### Combat System
+![Combat](readmestuff/combat.png)
+
+### Dungeon Exploration
+![Dungeon](readmestuff/dungeon.png)
+
+### Farming System
+![Farmer](readmestuff/farmer.png)
+
+### House Editor
+![House Editor](readmestuff/house_editor.png)
+
+### Inventory Management
+![Inventory](readmestuff/inventory.png)
+
+### Party System
+![Party](readmestuff/party.png)
+
+### Skill Points Allocation
+![Skill Points](readmestuff/skill_points.png)
+
+### Farming & Alchemist Demo
+[Watch the farming and alchemist gameplay video](readmestuff/farm_and_alchemist.mov)
+
 ## Overview
 
 CmdMMO is a real-time multiplayer game that runs entirely in the terminal. Players can see each other moving around the game world, engage in turn-based combat with enemies, collect items from chests, and progress through increasingly challenging stages. The game features a boss every 5 stages and includes RPG mechanics like leveling, stats, and inventory management.
