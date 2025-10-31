@@ -1,0 +1,174 @@
+name: Build Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        include:
+          - os: ubuntu-latest
+            artifact_name: CmdMMO-linux
+            executable_name: CmdMMO
+          - os: windows-latest
+            artifact_name: CmdMMO-windows
+            executable_name: CmdMMO.exe
+          - os: macos-latest
+            artifact_name: CmdMMO-macos
+            executable_name: CmdMMO
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pyinstaller
+
+      - name: Build client with PyInstaller
+        run: pyinstaller CmdMMO.spec
+
+      - name: Build server executable
+        working-directory: ./server
+        run: |
+          pkg . --targets node18-${{ matrix.os == 'ubuntu-latest' && 'linux' || matrix.os == 'windows-latest' && 'win' || 'macos' }}-x64 --output ../dist/CmdMMO-Server${{ matrix.os == 'windows-latest' && '.exe' || '' }}
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: Install server dependencies and pkg
+        working-directory: ./server
+        run: |
+          npm install
+          npm install -g pkg
+
+      - name: Create release package (Linux/Mac)
+        if: matrix.os != 'windows-latest'
+        run: |
+          mkdir -p release
+          cp dist/${{ matrix.executable_name }} release/
+          cp dist/CmdMMO-Server release/
+          cat > release/README.txt << 'EOF'
+          CmdMMO - Standalone Release
+          ===========================
+
+          NO INSTALLATION REQUIRED! Python and Node.js are already bundled.
+
+          How to use:
+          -----------
+
+          1. SERVER (only one person needs to run this):
+             - Run the CmdMMO-Server executable
+             - On Linux/Mac: ./CmdMMO-Server
+             - On Windows: Double-click CmdMMO-Server.exe
+             - Server will start on port 3001
+             
+          2. CLIENT (all players):
+             - Run the CmdMMO executable
+             - On Linux/Mac: sudo ./${{ matrix.executable_name }}
+             - On Windows: Run as Administrator
+             
+             NOTE: Administrator permissions are required for 
+             keyboard input handling
+
+          3. CONNECTING:
+             - By default connects to localhost:3001
+             - For LAN play: Players need to connect to server's IP
+             - Update IP in client/game/server.py if needed
+
+          Controls:
+          ---------
+          WASD or Arrow Keys - Movement
+          I - Inventory
+
+          Have fun! 🎮
+          EOF
+          cd release && tar -czf ../${{ matrix.artifact_name }}.tar.gz *
+
+      - name: Create release package (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path release
+          Copy-Item dist\${{ matrix.executable_name }} release\
+          Copy-Item dist\CmdMMO-Server.exe release\
+          @'
+          CmdMMO - Standalone Release
+          ===========================
+
+          NO INSTALLATION REQUIRED! Python and Node.js are already bundled.
+
+          How to use:
+          -----------
+
+          1. SERVER (only one person needs to run this):
+             - Double-click CmdMMO-Server.exe
+             - Server will start on port 3001
+             - Keep the window open while playing
+             
+          2. CLIENT (all players):
+             - Right-click CmdMMO.exe
+             - Select "Run as Administrator"
+             
+             NOTE: Administrator permissions are required for 
+             keyboard input handling
+
+          3. CONNECTING:
+             - By default connects to localhost:3001
+             - For LAN play: Players need to connect to server's IP
+             - Update IP in client/game/server.py if needed
+
+          Controls:
+          ---------
+          Arrow Keys - Movement
+          I - Inventory
+          K - Skill Tree
+          P - Party Menu
+          H - House Editor menu (work in progress)
+
+          Have fun! 🎮
+          '@ | Out-File -FilePath release\README.txt -Encoding utf8
+          Compress-Archive -Path release\* -DestinationPath ${{ matrix.artifact_name }}.zip
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ matrix.artifact_name }}
+          path: |
+            ${{ matrix.artifact_name }}.tar.gz
+            ${{ matrix.artifact_name }}.zip
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+    
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v3
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            */*.tar.gz
+            */*.zip
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
