@@ -3,6 +3,7 @@ from game.arts.buildings import *
 from game.ui.interactiveuis.landlord_ui import LandlordUI
 from game.ui.interactiveuis.yago_ui import YagoUI
 from game.ui.interactiveuis.rank_ui import RankUI
+from game.maps.map_transition import CityToDungeonTransition
 
 class City(Map):
   def __init__(self, dungeon_map=None):

@@ -1,4 +1,5 @@
 const Database = require('better-sqlite3');
+const crypto = require('crypto');
 const db = new Database('cmdmmo.db');
 
 // Criar tabela Player se não existir
@@ -12,6 +13,20 @@ db.exec(`
     maxLevelReached INTEGER DEFAULT 1,
     createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
     updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP
+  )
+`);
+
+// Criar tabela BankAccount
+db.exec(`
+  CREATE TABLE IF NOT EXISTS BankAccount (
+    accountId TEXT PRIMARY KEY,
+    playerId INTEGER NOT NULL,
+    password TEXT NOT NULL,
+    gold INTEGER DEFAULT 0,
+    items TEXT DEFAULT '[]',
+    createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (playerId) REFERENCES Player(id)
   )
 `);
 
@@ -76,6 +91,37 @@ const getAllByDungeonLevel = db.prepare(`
   ORDER BY maxDungeonLevel DESC
 `);
 
+// Bank Account queries
+const createBankAccount = db.prepare(`
+  INSERT INTO BankAccount (accountId, playerId, password, gold, items)
+  VALUES (@accountId, @playerId, @password, @gold, @items)
+`);
+
+const getBankAccountById = db.prepare('SELECT * FROM BankAccount WHERE accountId = ?');
+
+const updateBankAccountGold = db.prepare(`
+  UPDATE BankAccount 
+  SET gold = @gold,
+      updatedAt = CURRENT_TIMESTAMP
+  WHERE accountId = @accountId
+`);
+
+const updateBankAccountItems = db.prepare(`
+  UPDATE BankAccount 
+  SET items = @items,
+      updatedAt = CURRENT_TIMESTAMP
+  WHERE accountId = @accountId
+`);
+
+// Helper functions
+function hashPassword(password) {
+  return crypto.createHash('sha256').update(password).digest('hex');
+}
+
+function verifyPassword(password, hashedPassword) {
+  return hashPassword(password) === hashedPassword;
+}
+
 module.exports = {
   db,
   createPlayer,
@@ -88,5 +134,11 @@ module.exports = {
   getTop3ByDungeonLevel,
   getAllByGold,
   getAllByLevel,
-  getAllByDungeonLevel
+  getAllByDungeonLevel,
+  createBankAccount,
+  getBankAccountById,
+  updateBankAccountGold,
+  updateBankAccountItems,
+  hashPassword,
+  verifyPassword
 };

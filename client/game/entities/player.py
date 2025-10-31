@@ -69,6 +69,7 @@ class Player(BasePlayer, CombatEntity):
     self.skillLevels = {}  # Track level for each skill for scaling
     self.isSkillsMenuOpen = False  # Skills menu state
     self.isPartyMenuOpen = False  # Party menu state
+    self.isHouseEditorOpen = False  # House editor state
     self.pendingLevelUp = False  # Flag to show level up UI
 
     ## MMO-specific: Rank System

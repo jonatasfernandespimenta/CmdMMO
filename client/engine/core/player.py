@@ -109,6 +109,11 @@ class Player:
       if hasattr(self, 'isPartyMenuOpen'):
         self.isPartyMenuOpen = not self.isPartyMenuOpen
     
+    elif key.lower() == 'h':
+      # Toggle house editor if the player has this attribute
+      if hasattr(self, 'isHouseEditorOpen'):
+        self.isHouseEditorOpen = not self.isHouseEditorOpen
+    
     if newPlayerPosition != self.playerPosition:
       if network_callback:
         network_callback(newPlayerPosition)

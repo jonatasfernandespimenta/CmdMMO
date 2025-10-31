@@ -10,6 +10,7 @@ from game.ui.inventoryui import InventoryUi
 from game.ui.skillsui import SkillsUI
 from game.ui.levelup_ui import LevelUpUI
 from game.ui.party_ui import PartyUI
+from game.ui.house_editor_ui import HouseEditorUI
 from game.server import Server
 from game.party import Party
 from game.api_client import APIClient
@@ -132,6 +133,7 @@ def main():
     skillsUI = SkillsUI(player, term)
     levelUpUI = LevelUpUI(player, term)
     partyUI = PartyUI(player, party, term)
+    houseEditorUI = HouseEditorUI(player, {'width': 60, 'height': 20}, term)
 
     # Setup game client (this will add player to client.players)
     client.setCurrentMap(city)
@@ -173,6 +175,9 @@ def main():
       elif player.isPartyMenuOpen:
         partyUI.open()
         player.isPartyMenuOpen = False  # Reset after closing
+      elif player.isHouseEditorOpen:
+        houseEditorUI.render()
+        player.isHouseEditorOpen = False  # Reset after closing
       else:
         client.draw()
       

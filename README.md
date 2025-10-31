@@ -206,26 +206,25 @@ CmdMMO/
 
 Planned features and improvements for future versions:
 
-### Skills System
-- Class-specific abilities and special attacks
-- Active and passive skill trees
-- Cooldown-based skill mechanics
-- Skill points earned through leveling
-- Ultimate abilities unlocked at higher levels
+### 🔄 Skills System
+- ✅ Class-specific abilities and special attacks
+- 🔄 Active and passive skill trees
+- 🔄 Cooldown-based skill mechanics
+- ✅ Skill points earned through leveling
+- 🔄 Ultimate abilities unlocked at higher levels
 
-### Enemy Skills System
-- Enemies can have unique skills and abilities
-- Status effects (e.g., Snake poison - deals damage over time each turn)
-- Different enemy types with distinct skill sets
-- Boss enemies with powerful signature abilities
-- Skill animations and visual effects in combat UI
+### ✅ Enemy Skills System
+- ✅ Enemies can have unique skills and abilities
+- ✅ Status effects (e.g., Snake poison - deals damage over time each turn)
+- ✅ Different enemy types with distinct skill sets
+- 🔄 Boss enemies with powerful signature abilities
 
-### ✅ Level Up System Enhancement
+### 🔄 Level Up System Enhancement
 - ✅ Interactive level-up screen with stat allocation
 - ✅ Choice between different upgrade paths
 - ✅ Unlock new abilities and perks at milestone levels
 - ✅ Visual celebrations and notifications
-- Prestige system for endgame progression
+- 🔄 Prestige system for endgame progression
 
 ### Blacksmith System
 - Weapon and armor upgrading mechanics
@@ -301,7 +300,7 @@ Planned features and improvements for future versions:
 - 🔄 **Blacksmith District**: Upgrade weapons and armor (Coming soon)
 - 🔄 **Arena**: PvP battles (Coming soon)
 - 🔄 City quest board for side missions (Coming soon)
-- 🔄 **Bank System**: Persistent storage for items and gold (Coming soon)
+- ✅ **Bank System**: Persistent storage for items and gold (Coming soon)
   - Create bank account with unique ID and password
   - Store items and currency securely
   - Persistent across character deaths - access with new characters

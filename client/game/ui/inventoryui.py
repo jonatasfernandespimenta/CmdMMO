@@ -1,93 +1,123 @@
 import time
+from engine.ui.selectable_menu import SelectableMenu
 
 class InventoryUi:
   def __init__(self, player, term):
     self.player = player
     self.term = term
+    self.main_menu = None
+    self.inventory_menu = None
   
   def draw(self):
-    print(self.term.home + self.term.clear)
-    print(self.term.bold_cyan('=== INVENTORY ===\n'))
-    playerInventory = self.player.getInventory()
-
-    itemId = 0
-
-    if len(playerInventory) == 0:
-      print(self.term.yellow("You have no items!"))
-
-    for item in playerInventory:
-      print(self.term.green(item['art']))
-      print(self.term.bold('#' + str(itemId)))
-      print(self.term.cyan(str(item['name'])))
-      print(self.term.white('Quantity: ') + self.term.yellow(str(item['quantity'])))
-      itemId += 1
-      print('\n')
-
-    print('\n\n')
-
-    print(self.term.bold_white("What would you like to do?"))
-    print(self.term.green("1. ") + "Equip Item")
-    print(self.term.green("2. ") + "Drop Item")
-    print(self.term.green("3. ") + "Close Inventory")
-
-    playerChoice = ''
-    while True:
-      key = self.term.inkey(timeout=0.1)
-      if key and key.isprintable():
-        playerChoice = key
-        break
+    should_close = [False]
+    should_equip = [False]
+    should_drop = [False]
     
-    if playerChoice == "1":
-      self.equipItem()
+    def close_action(item):
+      should_close[0] = True
+    
+    def equip_action(item):
+      should_equip[0] = True
+    
+    def drop_action(item):
+      should_drop[0] = True
+    
+    self.main_menu = SelectableMenu(self.term, "What would you like to do?", show_numbers=True)
+    self.main_menu.add_item("Equip Item", callback=equip_action)
+    self.main_menu.add_item("Drop Item", callback=drop_action)
+    self.main_menu.add_item("Close Inventory", callback=close_action)
+    
+    while True:
+      print(self.term.home + self.term.clear)
+      print(self.term.bold_cyan('=== INVENTORY ===\n'))
+      playerInventory = self.player.getInventory()
 
-    elif playerChoice == "2":
-      self.dropItem()
+      if len(playerInventory) == 0:
+        print(self.term.yellow("You have no items!"))
+      else:
+        for i, item in enumerate(playerInventory):
+          print(self.term.green(item['art']))
+          print(self.term.bold('#' + str(i)))
+          print(self.term.cyan(str(item['name'])))
+          print(self.term.white('Quantity: ') + self.term.yellow(str(item['quantity'])))
+          print('\n')
 
-    elif playerChoice == "3":
-      self.player.setIsInventoryOpen(False)
+      print('\n')
+      
+      self.main_menu.render(0, self.term.get_location()[0], 40)
+      
+      key = self.term.inkey()
+      
+      if key.lower() == 'q':
+        self.player.setIsInventoryOpen(False)
+        break
+      
+      result = self.main_menu.handle_input(key)
+      
+      if result == 'execute':
+        if should_close[0]:
+          self.player.setIsInventoryOpen(False)
+          break
+        elif should_equip[0]:
+          should_equip[0] = False
+          self.equipItem()
+        elif should_drop[0]:
+          should_drop[0] = False
+          self.dropItem()
   
   def dropItem(self):
-    print(self.term.yellow("\nWhich item would you like to drop?"))
-    playerChoice = ''
-    while True:
-      key = self.term.inkey(timeout=0.1)
-      if key and key.isprintable():
-        playerChoice = key
-        break
+    playerInventory = self.player.getInventory()
     
-    try:
-      itemIndex = int(playerChoice)
-      itemDropped = self.player.getInventory()[itemIndex]
-      self.player.dropItem(itemIndex)
-      print(self.term.green("You dropped " + itemDropped['name']))
-    except:
-      print(self.term.red("Invalid item!"))
+    if len(playerInventory) == 0:
+      print(self.term.red("No items to drop!"))
+      time.sleep(1)
+      return
     
-    time.sleep(1)
+    print(self.term.home + self.term.clear)
+    print(self.term.bold_cyan('=== DROP ITEM ===\n'))
+    print(self.term.yellow("Which item would you like to drop?\n"))
+    
+    self.inventory_menu = SelectableMenu(self.term, "", show_numbers=True)
+    
+    for i, item in enumerate(playerInventory):
+      def drop_action(menu_item, idx=i):
+        itemDropped = self.player.getInventory()[idx]
+        self.player.dropItem(idx)
+        print(self.term.green(f"You dropped {itemDropped['name']}"))
+        time.sleep(1)
+      
+      self.inventory_menu.add_item(f"{item['name']} (x{item['quantity']})", callback=drop_action)
+    
+    self.inventory_menu.render(0, 4, 40)
+    
+    key = self.term.inkey()
+    self.inventory_menu.handle_input(key)
 
   def equipItem(self):
-    print(self.term.yellow("\nWhich item would you like to equip/use?"))
-    playerChoice = ''
-    while True:
-      key = self.term.inkey(timeout=0.1)
-      if key and key.isprintable():
-        playerChoice = key
-        break
+    playerInventory = self.player.getInventory()
     
-    inventory = self.player.getInventory()
+    if len(playerInventory) == 0:
+      print(self.term.red("No items to equip!"))
+      time.sleep(1)
+      return
     
-    try:
-      if int(playerChoice) >= len(inventory) or int(playerChoice) < 0:
-        print(self.term.red("Invalid item selection!"))
+    print(self.term.home + self.term.clear)
+    print(self.term.bold_cyan('=== EQUIP ITEM ===\n'))
+    print(self.term.yellow("Which item would you like to equip/use?\n"))
+    
+    self.inventory_menu = SelectableMenu(self.term, "", show_numbers=True)
+    
+    for i, item in enumerate(playerInventory):
+      def equip_action(menu_item, idx=i):
+        itemName = self.player.getInventory()[idx]['name']
+        self.player.equipItem(idx)
+        print(self.term.green(f"You equipped {itemName}"))
+        self.player.dropItem(idx)
         time.sleep(1)
-        return
       
-      itemIndex = int(playerChoice)
-      itemName = inventory[itemIndex]['name']
-      self.player.equipItem(itemIndex)
-      print(self.term.green("You equipped " + itemName))
-      self.player.dropItem(itemIndex)
-    except:
-      print(self.term.red("Invalid item!"))
+      self.inventory_menu.add_item(f"{item['name']} (x{item['quantity']})", callback=equip_action)
     
-    time.sleep(1)
+    self.inventory_menu.render(0, 4, 40)
+    
+    key = self.term.inkey()
+    self.inventory_menu.handle_input(key)

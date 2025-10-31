@@ -3,7 +3,7 @@ var express = require('express'),
     server = require('http').createServer(app),
     cors = require('cors')
 
-const { createPlayer, updatePlayer, getPlayerById, getPlayerByName, getAllPlayers, getTop3ByGold, getTop3ByLevel, getTop3ByDungeonLevel, getAllByGold, getAllByLevel, getAllByDungeonLevel } = require('./database');
+const { createPlayer, updatePlayer, getPlayerById, getPlayerByName, getAllPlayers, getTop3ByGold, getTop3ByLevel, getTop3ByDungeonLevel, getAllByGold, getAllByLevel, getAllByDungeonLevel, createBankAccount, getBankAccountById, updateBankAccountGold, updateBankAccountItems, hashPassword, verifyPassword } = require('./database');
 
 app.use(cors());
 app.use(express.json());
@@ -149,6 +149,240 @@ app.get('/api/rankings/dungeon', (req, res) => {
   try {
     const rankings = getAllByDungeonLevel.all();
     res.json(rankings);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// ==================== Bank API Endpoints ====================
+
+// POST - Create new bank account
+app.post('/api/bank/account', (req, res) => {
+  try {
+    const { accountId, playerId, password, gold = 0 } = req.body;
+    
+    if (!accountId || !playerId || !password) {
+      return res.status(400).json({ error: 'accountId, playerId, and password are required' });
+    }
+    
+    // Check if account already exists
+    const existingAccount = getBankAccountById.get(accountId);
+    if (existingAccount) {
+      return res.status(409).json({ error: 'Account ID already exists' });
+    }
+    
+    // Hash password and create account
+    const hashedPassword = hashPassword(password);
+    createBankAccount.run({
+      accountId,
+      playerId,
+      password: hashedPassword,
+      gold,
+      items: '[]'
+    });
+    
+    const newAccount = getBankAccountById.get(accountId);
+    // Don't send password back
+    delete newAccount.password;
+    res.status(201).json(newAccount);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// GET - Check if bank account exists and verify password
+app.post('/api/bank/account/verify', (req, res) => {
+  try {
+    const { accountId, password } = req.body;
+    
+    if (!accountId || !password) {
+      return res.status(400).json({ error: 'accountId and password are required' });
+    }
+    
+    const account = getBankAccountById.get(accountId);
+    
+    if (!account) {
+      return res.status(404).json({ error: 'Account not found', exists: false });
+    }
+    
+    const passwordValid = verifyPassword(password, account.password);
+    
+    if (!passwordValid) {
+      return res.status(401).json({ error: 'Invalid password', exists: true, valid: false });
+    }
+    
+    // Return account info without password
+    delete account.password;
+    res.json({ ...account, exists: true, valid: true });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// GET - Get bank account info (requires password verification)
+app.get('/api/bank/account/:accountId', (req, res) => {
+  try {
+    const { accountId } = req.params;
+    const { password } = req.query;
+    
+    if (!password) {
+      return res.status(400).json({ error: 'Password required' });
+    }
+    
+    const account = getBankAccountById.get(accountId);
+    
+    if (!account) {
+      return res.status(404).json({ error: 'Account not found' });
+    }
+    
+    if (!verifyPassword(password, account.password)) {
+      return res.status(401).json({ error: 'Invalid password' });
+    }
+    
+    delete account.password;
+    res.json(account);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// POST - Deposit gold
+app.post('/api/bank/deposit/gold', (req, res) => {
+  try {
+    const { accountId, password, amount } = req.body;
+    
+    if (!accountId || !password || amount === undefined) {
+      return res.status(400).json({ error: 'accountId, password, and amount are required' });
+    }
+    
+    if (amount <= 0) {
+      return res.status(400).json({ error: 'Amount must be positive' });
+    }
+    
+    const account = getBankAccountById.get(accountId);
+    
+    if (!account) {
+      return res.status(404).json({ error: 'Account not found' });
+    }
+    
+    if (!verifyPassword(password, account.password)) {
+      return res.status(401).json({ error: 'Invalid password' });
+    }
+    
+    const newGold = account.gold + amount;
+    updateBankAccountGold.run({ accountId, gold: newGold });
+    
+    const updatedAccount = getBankAccountById.get(accountId);
+    delete updatedAccount.password;
+    res.json(updatedAccount);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// POST - Withdraw gold
+app.post('/api/bank/withdraw/gold', (req, res) => {
+  try {
+    const { accountId, password, amount } = req.body;
+    
+    if (!accountId || !password || amount === undefined) {
+      return res.status(400).json({ error: 'accountId, password, and amount are required' });
+    }
+    
+    if (amount <= 0) {
+      return res.status(400).json({ error: 'Amount must be positive' });
+    }
+    
+    const account = getBankAccountById.get(accountId);
+    
+    if (!account) {
+      return res.status(404).json({ error: 'Account not found' });
+    }
+    
+    if (!verifyPassword(password, account.password)) {
+      return res.status(401).json({ error: 'Invalid password' });
+    }
+    
+    if (account.gold < amount) {
+      return res.status(400).json({ error: 'Insufficient funds' });
+    }
+    
+    const newGold = account.gold - amount;
+    updateBankAccountGold.run({ accountId, gold: newGold });
+    
+    const updatedAccount = getBankAccountById.get(accountId);
+    delete updatedAccount.password;
+    res.json(updatedAccount);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// POST - Deposit item
+app.post('/api/bank/deposit/item', (req, res) => {
+  try {
+    const { accountId, password, itemId } = req.body;
+    
+    if (!accountId || !password || !itemId) {
+      return res.status(400).json({ error: 'accountId, password, and itemId are required' });
+    }
+    
+    const account = getBankAccountById.get(accountId);
+    
+    if (!account) {
+      return res.status(404).json({ error: 'Account not found' });
+    }
+    
+    if (!verifyPassword(password, account.password)) {
+      return res.status(401).json({ error: 'Invalid password' });
+    }
+    
+    const items = JSON.parse(account.items || '[]');
+    items.push(itemId);
+    
+    updateBankAccountItems.run({ accountId, items: JSON.stringify(items) });
+    
+    const updatedAccount = getBankAccountById.get(accountId);
+    delete updatedAccount.password;
+    res.json(updatedAccount);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// POST - Withdraw item
+app.post('/api/bank/withdraw/item', (req, res) => {
+  try {
+    const { accountId, password, itemId } = req.body;
+    
+    if (!accountId || !password || !itemId) {
+      return res.status(400).json({ error: 'accountId, password, and itemId are required' });
+    }
+    
+    const account = getBankAccountById.get(accountId);
+    
+    if (!account) {
+      return res.status(404).json({ error: 'Account not found' });
+    }
+    
+    if (!verifyPassword(password, account.password)) {
+      return res.status(401).json({ error: 'Invalid password' });
+    }
+    
+    const items = JSON.parse(account.items || '[]');
+    const itemIndex = items.indexOf(itemId);
+    
+    if (itemIndex === -1) {
+      return res.status(404).json({ error: 'Item not found in bank' });
+    }
+    
+    items.splice(itemIndex, 1);
+    
+    updateBankAccountItems.run({ accountId, items: JSON.stringify(items) });
+    
+    const updatedAccount = getBankAccountById.get(accountId);
+    delete updatedAccount.password;
+    res.json(updatedAccount);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
