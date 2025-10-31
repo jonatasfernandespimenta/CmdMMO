@@ -6,14 +6,16 @@ materials = [
     'category': 'material',
     'rarity': 'common',
     'art': snake_skin,
-    'sell_price': 5
+    'sell_price': 5,
+    'origins': ['enemy_drop']
   },
   {
     'name': 'Mushroom',
     'category': 'material',
     'rarity': 'uncommon',
     'art': mushroom,
-    'sell_price': 25
+    'sell_price': 25,
+    'origins': ['harvest', 'enemy_drop', 'chest', 'merchant', 'forage', 'quest']
   }
 ]
 
@@ -24,6 +26,7 @@ seeds = [
     'rarity': 'uncommon',
     'growth_time': 60,
     'art': seed,
-    'sell_price': 10
+    'sell_price': 10,
+    'origins': ['harvest', 'enemy_drop', 'chest', 'merchant', 'forage', 'quest']
   }
 ]
