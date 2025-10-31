@@ -9,7 +9,7 @@ if TYPE_CHECKING:
 class RankUI:
   """UI for viewing player rankings"""
   
-  def __init__(self, player: 'Player', term: 'Terminal', server_url: str = 'http://localhost:3001'):
+  def __init__(self, player: 'Player', term: 'Terminal', server_url: str = 'http://172.23.209.86:3001'):
     self.player = player
     self.term = term
     self.server_url = server_url
