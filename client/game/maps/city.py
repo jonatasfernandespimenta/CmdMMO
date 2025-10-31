@@ -47,7 +47,7 @@ class City(Map):
       ('LandLordHouse', house, 8, 5, None),
       ('AlchemistHouse', mushroom_house, 18, 5, None),
       
-      ('RankBoard', rank_board, 15, 27, (14, 28)), 
+      ('RankBoard', rank_board, 15, 27, (16, 29)),
       
       ('FarmHouse', farm_house_map_version, 8, 45, None),
       ('Bank', bank, 18, 45, None)
