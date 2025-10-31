@@ -32,7 +32,7 @@ A multiplayer terminal-based roguelike MMO game where players explore procedural
 ![Skill Points](readmestuff/skill_points.png)
 
 ### Farming & Alchemist Demo
-[Watch the farming and alchemist gameplay video](readmestuff/farm_and_alchemist.mov)
+![Farming & Alchemist](readmestuff/farm.png)
 
 ## Overview
 
